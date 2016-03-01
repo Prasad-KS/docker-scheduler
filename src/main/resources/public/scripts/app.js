@@ -14,7 +14,7 @@ app.config(function ($routeProvider) {
         redirectTo: '/tasks'
     }).when('/tasks', {
         templateUrl: 'views/tasks.html',
-        controller: 'ListCtrl'
+        controller: 'ListTasksCtrl'
     }).when('/scheduledtasks', {
         templateUrl: 'views/scheduledtasks.html',
         controller: 'ListCtrl'
@@ -24,6 +24,23 @@ app.config(function ($routeProvider) {
     }).otherwise({
         redirectTo: '/tasks'
     })
+});
+
+app.controller('ListTasksCtrl', function ($scope, $http) {
+    $http.get('/v1/tasks').success(function (data) {
+        $scope.tasks = data;
+    }).error(function (data, status) {
+        console.log('Error ' + data)
+    })
+
+    $scope.todoStatusChanged = function (todo) {
+        console.log(todo);
+        $http.put('/api/v1/todos/' + todo.id, todo).success(function (data) {
+            console.log('status changed');
+        }).error(function (data, status) {
+            console.log('Error ' + data)
+        })
+    }
 });
 
 app.controller('ListCtrl', function ($scope, $http) {

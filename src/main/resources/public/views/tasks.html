@@ -3,32 +3,48 @@
 
 <table class="table table-hover">
     <tr>
-    <th>
+    <th rowspan="2">
         #
     </th>
-    <th>
+    <th rowspan="2">
         Name
     </th>
-    <th>
+    <th rowspan="2">
         Created On
     </th>
-    <th>
+    <th rowspan="2">
         Image
     </th>
-    <th>
+    <th rowspan="2">
         Command
     </th>
+    <th colspan="2">
+        Executions in last 24 hours
+    </th>
+    <tr>
+        <th>Suceeded</th>
+        <th>Failed</th>
     </tr>
-    <tr class="success-{{todo.done}}" ng-repeat="todo in todos">
+    </tr>
+    <tr ng-repeat="task in tasks">
         <td>{{$index+1}}</td>
         <td>
-            {{todo.title}}
+            {{task.name}}
         </td>
         <td>
-            {{todo.createdOn |date:'medium'}}
+            {{task.createdOn |date:'medium'}}
         </td>
         <td>
-            <input type="checkbox" ng-change="todoStatusChanged(todo)" ng-value="todo.done" ng-model="todo.done">
+            {{task.image}}
+        </td>
+        <td>
+            {{task.command}}
+        </td>
+        <td>
+            {{task.executionsSucceeded}}
+        </td>
+        <td>
+            {{task.executionsFailed}}
         </td>
     </tr>
 </table>

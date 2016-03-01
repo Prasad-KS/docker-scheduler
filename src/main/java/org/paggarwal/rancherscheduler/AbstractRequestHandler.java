@@ -19,35 +19,34 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
     private Class<V> valueClass;
 
     private static final int HTTP_BAD_REQUEST = 400;
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
 
     public AbstractRequestHandler(Class<V> valueClass) {
         this.valueClass = valueClass;
     }
 
-    private static boolean shouldReturnHtml(Request request) {
-        String accept = request.headers("Accept");
-        return accept != null && accept.contains("text/html");
-    }
-
     public static String dataToJson(Object data) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
             return mapper.writeValueAsString(data);
         } catch (IOException e){
             throw new RuntimeException("IOException from a StringWriter?");
         }
     }
 
-    public final Answer process(V value, Map<String, String> urlParams, boolean shouldReturnHtml) {
+    public final Answer process(V value, Map<String, String> urlParams) {
         if (value != null && !value.isValid()) {
             return new Answer(HTTP_BAD_REQUEST);
         } else {
-            return processImpl(value, urlParams, shouldReturnHtml);
+            return processImpl(value, urlParams);
         }
     }
 
-    protected abstract Answer processImpl(V value, Map<String, String> urlParams, boolean shouldReturnHtml);
+    protected abstract Answer processImpl(V value, Map<String, String> urlParams);
 
 
     @Override
@@ -59,13 +58,9 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
                 value = objectMapper.readValue(request.body(), valueClass);
             }
             Map<String, String> urlParams = request.params();
-            Answer answer = process(value, urlParams, shouldReturnHtml(request));
+            Answer answer = process(value, urlParams);
             response.status(answer.getCode());
-            if (shouldReturnHtml(request)) {
-                response.type("text/html");
-            } else {
-                response.type("application/json");
-            }
+            response.type("application/json");
             response.body(answer.getBody());
             return answer.getBody();
         } catch (JsonMappingException e) {
