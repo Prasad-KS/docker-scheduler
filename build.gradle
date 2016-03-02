@@ -43,7 +43,7 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.38'
     compile 'org.jooq:jooq:3.7.2'
     compile 'org.apache.tomcat:tomcat-jdbc:8.0.32'
-
+    compile 'org.liquibase:liquibase-core:3.4.2'
 
     compile 'org.springframework:spring-core:4.2.5.RELEASE'
     compile 'org.springframework:spring-context:4.2.5.RELEASE'

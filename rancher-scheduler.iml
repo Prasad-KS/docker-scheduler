@@ -55,5 +55,6 @@
     <orderEntry type="library" name="Gradle: org.springframework:spring-expression:4.2.5.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.tomcat:tomcat-jdbc:8.0.32" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.tomcat:tomcat-juli:8.0.32" level="project" />
+    <orderEntry type="library" name="Gradle: org.liquibase:liquibase-core:3.4.2" level="project" />
   </component>
 </module>

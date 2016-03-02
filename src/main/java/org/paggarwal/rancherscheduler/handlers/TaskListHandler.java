@@ -12,8 +12,8 @@ import java.util.Map;
 @Service
 public class TaskListHandler extends AbstractRequestHandler<EmptyPayload> {
 
-    public TaskListHandler(Class<EmptyPayload> valueClass) {
-        super(valueClass);
+    public TaskListHandler() {
+        super(EmptyPayload.class);
     }
 
     @Override
