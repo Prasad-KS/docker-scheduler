@@ -27,6 +27,6 @@ public class WebServer {
 
     private void setupRoutes() {
         get("/", (request, response) -> CharStreams.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("public/index.html"))));
-        get("/v1/tasks",(request, response) -> taskListHandler);
+        get("/v1/tasks",taskListHandler);
     }
 }

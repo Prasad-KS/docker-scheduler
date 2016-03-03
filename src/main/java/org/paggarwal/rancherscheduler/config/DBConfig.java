@@ -1,17 +1,27 @@
 package org.paggarwal.rancherscheduler.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.jooq.*;
+import org.jooq.impl.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.inject.Inject;
+import java.sql.SQLException;
 
 /**
  * Created by paggarwal on 2/29/16.
  */
 @Configuration
 public class DBConfig {
-
-
     @Value("#{ systemEnvironment['DATABASE_URL'] ?: 'jdbc:mysql://localhost:3306/rancherscheduler' }")
     private String dbUrl;
 
@@ -59,5 +69,42 @@ public class DBConfig {
         dataSource.setValidationQuery("/* ping */ SELECT 1");
         dataSource.setTestWhileIdle(true);
         return dataSource;
+    }
+
+    @Bean
+    @Inject
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager();
+        transactionManager.setDataSource(dataSource);
+        return transactionManager;
+    }
+
+    @Bean
+    @Inject
+    public org.jooq.Configuration jooqConfig(DataSource dataSource) {
+        return new DefaultConfiguration()
+                .set(SQLDialect.MYSQL)
+                .set(new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource)))
+                .set(new DefaultExecuteListenerProvider(new DefaultExecuteListener() {
+            @Override
+            public void exception(ExecuteContext ctx) {
+                SQLException e = ctx.sqlException();
+
+                if (e != null) {
+                    SQLDialect             dialect    = ctx.configuration().dialect();
+                    SQLExceptionTranslator translator = (dialect != null)
+                            ? new SQLErrorCodeSQLExceptionTranslator(dialect.name())
+                            : new SQLStateSQLExceptionTranslator();
+
+                    ctx.exception(translator.translate("jOOQ", ctx.sql(), e));
+                }
+            }
+        }));
+    }
+
+    @Bean
+    @Inject
+    public DSLContext dsl(org.jooq.Configuration jooqConfig) {
+        return new DefaultDSLContext(jooqConfig);
     }
 }
