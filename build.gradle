@@ -26,7 +26,9 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'org.liquibase.gradle'
 apply plugin: 'nu.studer.jooq'
+apply plugin: 'application'
 
+mainClassName = "org.paggarwal.rancherscheduler.Main"
 
 sourceCompatibility = 1.8
 

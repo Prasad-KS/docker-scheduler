@@ -19,6 +19,7 @@ import static spark.Spark.staticFileLocation;
 public class WebServer {
     @Autowired
     private TaskListHandler taskListHandler;
+
     public void run() {
         port(8080);
         staticFileLocation("/public");

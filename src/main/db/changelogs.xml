@@ -6,7 +6,7 @@
             dbms="mysql"
     />
 
-    <changeSet author="paggarwal (generated)" id="1456800943061-1">
+    <changeSet author="paggarwal (generated)" id="1">
         <createTable tableName="TASKS">
             <column autoIncrement="true" name="id" type="INT">
                 <constraints primaryKey="true"/>
@@ -20,10 +20,13 @@
             <column name="image" type="VARCHAR(1024)">
                 <constraints nullable="false"/>
             </column>
+            <column name="command" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
             <column defaultValueNumeric="0" name="success" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="failed" type="INT">
+            <column defaultValueNumeric="0" name="failed" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
