@@ -1,41 +1,24 @@
 package org.paggarwal.rancherscheduler;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 /**
  * Created by paggarwal on 2/22/16.
  */
 public class Answer {
+    private final int code;
+    private final Object body;
 
     public Answer(int code) {
+        this(code, null);
+    }
+    public Answer(int code, Object body){
         this.code = code;
-        this.body = "";
+        this.body = body;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Answer answer = (Answer) o;
-
-        if (code != answer.code) return false;
-        if (body != null ? !body.equals(answer.body) : answer.body != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = code;
-        result = 31 * result + (body != null ? body.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Answer(code=" + code + ", body=" + body + ")";
-    }
-
-    public String getBody() {
+    public Object getBody() {
         return body;
     }
 
@@ -43,15 +26,29 @@ public class Answer {
         return code;
     }
 
-    private int code;
-    private String body;
-
-    public Answer(int code, String body){
-        this.code = code;
-        this.body = body;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Answer)) return false;
+        Answer answer = (Answer) o;
+        return getCode() == answer.getCode() &&
+                Objects.equal(getBody(), answer.getBody());
     }
 
-    public static Answer ok(String body) {
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getCode(), getBody());
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("code", code)
+                .add("body", body)
+                .toString();
+    }
+
+    public static Answer ok(Object body) {
         return new Answer(200, body);
     }
 }

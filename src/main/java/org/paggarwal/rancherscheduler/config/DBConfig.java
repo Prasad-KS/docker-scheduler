@@ -1,14 +1,18 @@
 package org.paggarwal.rancherscheduler.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.jooq.*;
-import org.jooq.impl.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jooq.DSLContext;
+import org.jooq.ExecuteContext;
+import org.jooq.SQLDialect;
+import org.jooq.conf.Settings;
+import org.jooq.impl.DSL;
+import org.jooq.impl.DefaultConfiguration;
+import org.jooq.impl.DefaultExecuteListener;
+import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
@@ -84,7 +88,8 @@ public class DBConfig {
     public org.jooq.Configuration jooqConfig(DataSource dataSource) {
         return new DefaultConfiguration()
                 .set(SQLDialect.MYSQL)
-                .set(new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource)))
+                .set(new Settings().withRenderSchema(false))
+                .set(new SpringTransactionConnectionProvider(dataSource))
                 .set(new DefaultExecuteListenerProvider(new DefaultExecuteListener() {
             @Override
             public void exception(ExecuteContext ctx) {
@@ -105,6 +110,6 @@ public class DBConfig {
     @Bean
     @Inject
     public DSLContext dsl(org.jooq.Configuration jooqConfig) {
-        return new DefaultDSLContext(jooqConfig);
+        return DSL.using(jooqConfig);
     }
 }

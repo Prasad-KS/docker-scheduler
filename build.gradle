@@ -81,8 +81,8 @@ jooq {
         jdbc {
             driver = 'com.mysql.jdbc.Driver'
             url = 'jdbc:mysql://localhost:3306/rancherscheduler'
-            user = 'root'
-            password = 'root'
+            user = 'dev'
+            password = 'dev'
             schema = 'rancherscheduler'
         }
         generator {

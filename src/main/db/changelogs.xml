@@ -6,7 +6,7 @@
             dbms="mysql"
     />
 
-    <changeSet author="paggarwal (generated)" id="1">
+    <changeSet author="paggarwal" id="1">
         <createTable tableName="TASKS">
             <column autoIncrement="true" name="id" type="INT">
                 <constraints primaryKey="true"/>
@@ -23,10 +23,26 @@
             <column name="command" type="VARCHAR(1024)">
                 <constraints nullable="false"/>
             </column>
+            <column defaultValueNumeric="0" name="type" type="INT">
+                <constraints nullable="false"/>
+            </column>
             <column defaultValueNumeric="0" name="success" type="INT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="failed" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="paggarwal" id="2">
+        <createTable tableName="SCHEDULED_TASKS">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="task_id" type="INT">
+                <constraints foreignKeyName="SCHEDULED_TASKS_TASKS" references="TASKS(ID)"/>
+            </column>
+            <column name="cron" type="VARCHAR(1024)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

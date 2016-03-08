@@ -18,6 +18,9 @@ app.config(function ($routeProvider) {
     }).when('/scheduledtasks', {
         templateUrl: 'views/scheduledtasks.html',
         controller: 'ListCtrl'
+    }).when('/tasks/create', {
+        templateUrl: 'views/createtask.html',
+        controller: 'CreateTaskCtrl'
     }).when('/create', {
         templateUrl: 'views/create.html',
         controller: 'CreateCtrl'
@@ -54,6 +57,21 @@ app.controller('ListCtrl', function ($scope, $http) {
         console.log(todo);
         $http.put('/api/v1/todos/' + todo.id, todo).success(function (data) {
             console.log('status changed');
+        }).error(function (data, status) {
+            console.log('Error ' + data)
+        })
+    }
+});
+
+app.controller('CreateTaskCtrl', function ($scope, $http, $location) {
+    $scope.task = {
+        done: false
+    };
+
+    $scope.createTask = function () {
+        console.log($scope.task);
+        $http.post('/v1/tasks', $scope.task).success(function (data) {
+            $location.path('/tasks');
         }).error(function (data, status) {
             console.log('Error ' + data)
         })

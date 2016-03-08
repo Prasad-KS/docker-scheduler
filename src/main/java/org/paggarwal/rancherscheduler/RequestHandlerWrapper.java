@@ -10,14 +10,16 @@ import spark.Route;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 
 /**
  * Created by paggarwal on 2/22/16.
  */
-public abstract class AbstractRequestHandler<V extends Validable> implements RequestHandler<V>, Route {
+public class RequestHandlerWrapper<V extends Validable> implements RequestHandler<V>,Route {
 
     private Class<V> valueClass;
-
+    private BiFunction<V,Map<String,String>,Answer> handler;
     private static final int HTTP_BAD_REQUEST = 400;
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -25,13 +27,17 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public AbstractRequestHandler(Class<V> valueClass) {
+    public RequestHandlerWrapper(Class<V> valueClass, BiFunction<V,Map<String,String>,Answer> handler) {
         this.valueClass = valueClass;
+        this.handler = handler;
     }
+
 
     public static String dataToJson(Object data) {
         try {
-
+            System.out.println(data);
+            System.out.println(data.getClass());
+            System.out.println(mapper.writeValueAsString(data));
             return mapper.writeValueAsString(data);
         } catch (IOException e){
             throw new RuntimeException("IOException from a StringWriter?");
@@ -42,12 +48,9 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
         if (value != null && !value.isValid()) {
             return new Answer(HTTP_BAD_REQUEST);
         } else {
-            return processImpl(value, urlParams);
+            return handler.apply(value,urlParams);
         }
     }
-
-    protected abstract Answer processImpl(V value, Map<String, String> urlParams);
-
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
@@ -61,8 +64,9 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
             Answer answer = process(value, urlParams);
             response.status(answer.getCode());
             response.type("application/json");
-            response.body(answer.getBody());
-            return answer.getBody();
+            String body = dataToJson(answer.getBody());
+            response.body(body);
+            return body;
         } catch (JsonMappingException e) {
             response.status(400);
             response.body(e.getMessage());

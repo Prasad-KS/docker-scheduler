@@ -17,10 +17,16 @@ import static org.paggarwal.rancherscheduler.generated.tables.Tasks.TASKS;
 public class TaskService {
 
     @Inject
-    DSLContext ctx;
+    private DSLContext dsl;
 
     @Transactional(readOnly = true)
     public List<Task> list() {
-        return ctx.selectFrom(TASKS).fetchInto(Task.class);
+        return dsl.selectFrom(TASKS).where(TASKS.TYPE.equal(0)).fetchInto(Task.class);
+    }
+
+    @Transactional
+    public Integer create(Task task) {
+        return dsl.insertInto(TASKS).columns(TASKS.NAME
+                , TASKS.IMAGE, TASKS.COMMAND).values(task.getName(), task.getImage(), task.getCommand()).returning(TASKS.ID).fetchOne().getId();
     }
 }

@@ -1,16 +1,13 @@
 package org.paggarwal.rancherscheduler;
 
 import com.google.common.io.CharStreams;
-import org.paggarwal.rancherscheduler.handlers.TaskListHandler;
+import org.paggarwal.rancherscheduler.handlers.TaskHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStreamReader;
 
-import static spark.Spark.get;
-import static spark.Spark.port;
-import static spark.Spark.staticFileLocation;
+import static spark.Spark.*;
 
 /**
  * Created by paggarwal on 2/29/16.
@@ -18,7 +15,7 @@ import static spark.Spark.staticFileLocation;
 @Component
 public class WebServer {
     @Autowired
-    private TaskListHandler taskListHandler;
+    private TaskHandler taskHandler;
 
     public void run() {
         port(8080);
@@ -28,6 +25,7 @@ public class WebServer {
 
     private void setupRoutes() {
         get("/", (request, response) -> CharStreams.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("public/index.html"))));
-        get("/v1/tasks",taskListHandler);
+        get("/v1/tasks",taskHandler.list());
+        post("/v1/tasks",taskHandler.create());
     }
 }
