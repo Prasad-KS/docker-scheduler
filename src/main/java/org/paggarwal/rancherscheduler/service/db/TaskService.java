@@ -24,9 +24,14 @@ public class TaskService {
         return dsl.selectFrom(TASKS).where(TASKS.TYPE.equal(0)).fetchInto(Task.class);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Integer create(Task task) {
         return dsl.insertInto(TASKS).columns(TASKS.NAME
                 , TASKS.IMAGE, TASKS.COMMAND).values(task.getName(), task.getImage(), task.getCommand()).returning(TASKS.ID).fetchOne().getId();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean delete(int id) {
+        return dsl.delete(TASKS).where(TASKS.ID.equal(id)).execute() > 0;
     }
 }

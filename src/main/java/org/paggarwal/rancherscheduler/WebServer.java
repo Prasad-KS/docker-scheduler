@@ -24,8 +24,12 @@ public class WebServer {
     }
 
     private void setupRoutes() {
+        // MainApp
         get("/", (request, response) -> CharStreams.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("public/index.html"))));
+
+        // Tasks
         get("/v1/tasks",taskHandler.list());
         post("/v1/tasks",taskHandler.create());
+        delete("/v1/task/:id",taskHandler.delete());
     }
 }

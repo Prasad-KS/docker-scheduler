@@ -26,7 +26,13 @@ public class TaskHandler {
 
     public RequestHandlerWrapper<Task> create() {
         return new RequestHandlerWrapper<Task>(Task.class,(value, urlParams) -> {
-            return new Answer(201,taskService.create(value));
+            return new Answer(201,ImmutableMap.of("id",taskService.create(value)));
+        });
+    }
+
+    public RequestHandlerWrapper<EmptyPayload> delete() {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.class,(value, urlParams) -> {
+            return new Answer(200,ImmutableMap.of("status", taskService.delete((int) Integer.parseInt(urlParams.get("id")))));
         });
     }
 }
