@@ -3,29 +3,33 @@
 
 <table class="table table-hover">
     <tr>
-    <th rowspan="2">
-        #
-    </th>
-    <th rowspan="2">
-        Name
-    </th>
-    <th rowspan="2">
-        Created On
-    </th>
-    <th rowspan="2">
-        Image
-    </th>
-    <th rowspan="2">
-        Command
-    </th>
-    <th colspan="2">
-        Executions in last 24 hours
-    </th>
+        <th rowspan="2">
+            #
+        </th>
+        <th rowspan="2">
+            Name
+        </th>
+        <th rowspan="2">
+            Created On
+        </th>
+        <th rowspan="2">
+            Image
+        </th>
+        <th rowspan="2">
+            Command
+        </th>
+        <th rowspan="2">
+            Delete
+        </th>
+        <th colspan="2">
+            Executions in last 24 hours
+        </th>
+    </tr>
     <tr>
         <th>Suceeded</th>
         <th>Failed</th>
     </tr>
-    </tr>
+
     <tr ng-repeat="task in tasks">
         <td>{{$index+1}}</td>
         <td>
@@ -41,10 +45,14 @@
             {{task.command}}
         </td>
         <td>
+            <a ng-really-message="Are you sure?" ng-really-click="deleteTask({{task}})"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </td>
+        <td>
             {{task.success}}
         </td>
         <td>
             {{task.failed}}
         </td>
+
     </tr>
 </table>

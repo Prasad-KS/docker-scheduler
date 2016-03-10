@@ -6,7 +6,8 @@ var app = angular.module('todoapp', [
     'ngCookies',
     'ngResource',
     'ngSanitize',
-    'ngRoute'
+    'ngRoute',
+    'ui.bootstrap'
 ]);
 
 app.config(function ($routeProvider) {
@@ -14,79 +15,91 @@ app.config(function ($routeProvider) {
         redirectTo: '/tasks'
     }).when('/tasks', {
         templateUrl: 'views/tasks.html',
-        controller: 'ListTasksCtrl'
-    }).when('/scheduledtasks', {
-        templateUrl: 'views/scheduledtasks.html',
-        controller: 'ListCtrl'
+        controller: 'TaskController'
     }).when('/tasks/create', {
         templateUrl: 'views/createtask.html',
-        controller: 'CreateTaskCtrl'
-    }).when('/create', {
-        templateUrl: 'views/create.html',
-        controller: 'CreateCtrl'
+        controller: 'TaskController'
+    }).when('/scheduledtasks', {
+        templateUrl: 'views/scheduledtasks.html',
+        controller: 'ScheduledTaskController'
+    }).when('/scheduledtasks/create', {
+        templateUrl: 'views/createscheduledtask.html',
+        controller: 'ScheduledTaskController'
     }).otherwise({
         redirectTo: '/tasks'
     })
 });
 
-app.controller('ListTasksCtrl', function ($scope, $http) {
-    $http.get('/v1/tasks').success(function (data) {
-        $scope.tasks = data;
-    }).error(function (data, status) {
-        console.log('Error ' + data)
-    })
+app.directive('ngReallyClick', [function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.bind('click', function() {
+                var message = attrs.ngReallyMessage;
+                if (message && confirm(message)) {
+                    scope.$apply(attrs.ngReallyClick);
+                }
+            });
+        }
+    }
+}]);
 
-    $scope.todoStatusChanged = function (todo) {
-        console.log(todo);
-        $http.put('/api/v1/todos/' + todo.id, todo).success(function (data) {
-            console.log('status changed');
+app.controller('TaskController', function ($scope, $http, $location, $route) {
+    if($location.$$path == "/tasks") {
+        $http.get('/v1/tasks').success(function (data) {
+            $scope.tasks = data;
         }).error(function (data, status) {
             console.log('Error ' + data)
-        })
+        });
     }
-});
 
-app.controller('ListCtrl', function ($scope, $http) {
-    $http.get('/api/v1/todos').success(function (data) {
-        $scope.todos = data;
-    }).error(function (data, status) {
-        console.log('Error ' + data)
-    })
-
-    $scope.todoStatusChanged = function (todo) {
-        console.log(todo);
-        $http.put('/api/v1/todos/' + todo.id, todo).success(function (data) {
-            console.log('status changed');
-        }).error(function (data, status) {
-            console.log('Error ' + data)
-        })
-    }
-});
-
-app.controller('CreateTaskCtrl', function ($scope, $http, $location) {
     $scope.task = {
         done: false
     };
 
+
     $scope.createTask = function () {
-        console.log($scope.task);
         $http.post('/v1/tasks', $scope.task).success(function (data) {
             $location.path('/tasks');
         }).error(function (data, status) {
             console.log('Error ' + data)
         })
     }
+
+    $scope.deleteTask = function (task) {
+        $http.delete('/v1/tasks/' + task.id).success(function (data) {
+            $route.reload();
+        }).error(function (data, status) {
+            console.log('Error ' + data)
+        })
+    }
 });
 
-app.controller('CreateCtrl', function ($scope, $http, $location) {
-    $scope.todo = {
+app.controller('ScheduledTaskController', function ($scope, $http, $location, $route) {
+    if($location.$$path == "/scheduledtasks") {
+        $http.get('/v1/scheduledtasks').success(function (data) {
+            $scope.tasks = data;
+        }).error(function (data, status) {
+            console.log('Error ' + data)
+        });
+    }
+
+    $scope.task = {
         done: false
     };
 
-    $scope.createTodo = function () {
-        console.log($scope.todo);
-        $http.post('/api/v1/todos', $scope.todo).success(function (data) {
-            $location.path('/');
+
+    $scope.createTask = function () {
+        $http.post('/v1/scheduledtasks', $scope.task).success(function (data) {
+            $location.path('/scheduledtasks');
+        }).error(function (data, status) {
+            console.log('Error ' + data)
+        })
+    }
+
+    $scope.deleteTask = function (task) {
+        $http.delete('/v1/scheduledtasks/' + task.id).success(function (data) {
+            $route.reload();
         }).error(function (data, status) {
             console.log('Error ' + data)
         })

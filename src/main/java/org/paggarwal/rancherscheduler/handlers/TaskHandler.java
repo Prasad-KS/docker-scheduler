@@ -32,7 +32,7 @@ public class TaskHandler {
 
     public RequestHandlerWrapper<EmptyPayload> delete() {
         return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.class,(value, urlParams) -> {
-            return new Answer(200,ImmutableMap.of("status", taskService.delete((int) Integer.parseInt(urlParams.get("id")))));
+            return new Answer(200,ImmutableMap.of("status", taskService.delete((int) Integer.parseInt(urlParams.get(":id")))));
         });
     }
 }

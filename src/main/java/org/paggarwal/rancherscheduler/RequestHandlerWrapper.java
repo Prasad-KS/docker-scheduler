@@ -35,9 +35,6 @@ public class RequestHandlerWrapper<V extends Validable> implements RequestHandle
 
     public static String dataToJson(Object data) {
         try {
-            System.out.println(data);
-            System.out.println(data.getClass());
-            System.out.println(mapper.writeValueAsString(data));
             return mapper.writeValueAsString(data);
         } catch (IOException e){
             throw new RuntimeException("IOException from a StringWriter?");

@@ -30,6 +30,6 @@ public class WebServer {
         // Tasks
         get("/v1/tasks",taskHandler.list());
         post("/v1/tasks",taskHandler.create());
-        delete("/v1/task/:id",taskHandler.delete());
+        delete("/v1/tasks/:id",taskHandler.delete());
     }
 }
