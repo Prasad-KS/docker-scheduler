@@ -1,1 +1,1 @@
-# rancher-scheduler
+# docker-scheduler
