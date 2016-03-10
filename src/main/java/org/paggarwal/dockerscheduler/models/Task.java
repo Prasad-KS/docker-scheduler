@@ -1,11 +1,11 @@
-package org.paggarwal.rancherscheduler.models;
+package org.paggarwal.dockerscheduler.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import org.paggarwal.rancherscheduler.Validable;
+import org.paggarwal.dockerscheduler.Validable;
 
 import java.util.Date;
 

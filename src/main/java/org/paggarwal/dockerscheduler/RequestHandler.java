@@ -1,4 +1,4 @@
-package org.paggarwal.rancherscheduler;
+package org.paggarwal.dockerscheduler;
 
 import java.util.Map;
 

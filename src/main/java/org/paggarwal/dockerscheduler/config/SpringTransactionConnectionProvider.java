@@ -1,4 +1,4 @@
-package org.paggarwal.rancherscheduler.config;
+package org.paggarwal.dockerscheduler.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.jooq.ConnectionProvider;

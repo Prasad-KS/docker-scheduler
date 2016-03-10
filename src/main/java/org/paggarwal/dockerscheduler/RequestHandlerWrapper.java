@@ -1,9 +1,9 @@
-package org.paggarwal.rancherscheduler;
+package org.paggarwal.dockerscheduler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.paggarwal.rancherscheduler.handlers.EmptyPayload;
+import org.paggarwal.dockerscheduler.handlers.EmptyPayload;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -11,7 +11,6 @@ import spark.Route;
 import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
 
 /**
  * Created by paggarwal on 2/22/16.

@@ -1,4 +1,4 @@
-package org.paggarwal.rancherscheduler;
+package org.paggarwal.dockerscheduler;
 
 /**
  * Created by paggarwal on 2/22/16.

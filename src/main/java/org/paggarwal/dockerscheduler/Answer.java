@@ -1,4 +1,4 @@
-package org.paggarwal.rancherscheduler;
+package org.paggarwal.dockerscheduler;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

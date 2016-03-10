@@ -28,7 +28,7 @@ apply plugin: 'org.liquibase.gradle'
 apply plugin: 'nu.studer.jooq'
 apply plugin: 'application'
 
-mainClassName = "org.paggarwal.rancherscheduler.Main"
+mainClassName = "org.paggarwal.dockerscheduler.Main"
 
 sourceCompatibility = 1.8
 
@@ -69,7 +69,7 @@ liquibase {
     activities {
         main {
             changeLogFile 'src/main/db/changelogs.xml'
-            url 'jdbc:mysql://localhost:3306/rancherscheduler'
+            url 'jdbc:mysql://localhost:3306/dockerscheduler'
             username 'dev'
             password 'dev'
         }
@@ -80,10 +80,10 @@ jooq {
     db(sourceSets.main) {
         jdbc {
             driver = 'com.mysql.jdbc.Driver'
-            url = 'jdbc:mysql://localhost:3306/rancherscheduler'
+            url = 'jdbc:mysql://localhost:3306/dockerscheduler'
             user = 'dev'
             password = 'dev'
-            schema = 'rancherscheduler'
+            schema = 'dockerscheduler'
         }
         generator {
             name = 'org.jooq.util.DefaultGenerator'
@@ -92,14 +92,14 @@ jooq {
             }
             database {
                 name = 'org.jooq.util.mysql.MySQLDatabase'
-                inputSchema = 'rancherscheduler'
+                inputSchema = 'dockerscheduler'
                 dateAsTimestamp = true
                 unsignedTypes = false
                 includes = ".*"
                 excludes = "DATABASECHANGELOG|DATABASECHANGELOGLOCK"
             }
             target {
-                packageName = 'org.paggarwal.rancherscheduler.generated'
+                packageName = 'org.paggarwal.dockerscheduler.generated'
                 directory = "${projectDir}/src/main/generated"
             }
         }

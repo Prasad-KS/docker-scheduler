@@ -1,14 +1,13 @@
-package org.paggarwal.rancherscheduler.handlers;
+package org.paggarwal.dockerscheduler.handlers;
 
 import com.google.common.collect.ImmutableMap;
-import org.paggarwal.rancherscheduler.RequestHandlerWrapper;
-import org.paggarwal.rancherscheduler.Answer;
-import org.paggarwal.rancherscheduler.models.Task;
-import org.paggarwal.rancherscheduler.service.db.TaskService;
+import org.paggarwal.dockerscheduler.RequestHandlerWrapper;
+import org.paggarwal.dockerscheduler.Answer;
+import org.paggarwal.dockerscheduler.models.Task;
+import org.paggarwal.dockerscheduler.service.db.TaskService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * Created by paggarwal on 3/7/16.

@@ -1,11 +1,10 @@
-package org.paggarwal.rancherscheduler;
+package org.paggarwal.dockerscheduler;
 
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
 import org.apache.tomcat.jdbc.pool.DataSource;
@@ -19,7 +18,7 @@ import java.sql.SQLException;
  * Created by paggarwal on 2/22/16.
  */
 @Configuration
-@ComponentScan("org.paggarwal.rancherscheduler")
+@ComponentScan("org.paggarwal.dockerscheduler")
 public class Main {
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Main.class);

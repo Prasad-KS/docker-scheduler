@@ -1,4 +1,4 @@
-package org.paggarwal.rancherscheduler.config;
+package org.paggarwal.dockerscheduler.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.jooq.DSLContext;
@@ -26,7 +26,7 @@ import java.sql.SQLException;
  */
 @Configuration
 public class DBConfig {
-    @Value("#{ systemEnvironment['DATABASE_URL'] ?: 'jdbc:mysql://localhost:3306/rancherscheduler' }")
+    @Value("#{ systemEnvironment['DATABASE_URL'] ?: 'jdbc:mysql://localhost:3306/dockerscheduler' }")
     private String dbUrl;
 
     @Value("#{ systemEnvironment['DATABASE_USERNAME'] ?: 'dev' }")

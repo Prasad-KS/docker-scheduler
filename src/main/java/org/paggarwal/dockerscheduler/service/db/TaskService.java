@@ -1,14 +1,14 @@
-package org.paggarwal.rancherscheduler.service.db;
+package org.paggarwal.dockerscheduler.service.db;
 
 import org.jooq.DSLContext;
-import org.paggarwal.rancherscheduler.models.Task;
+import org.paggarwal.dockerscheduler.models.Task;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static org.paggarwal.rancherscheduler.generated.tables.Tasks.TASKS;
+import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
 
 /**
  * Created by paggarwal on 3/2/16.

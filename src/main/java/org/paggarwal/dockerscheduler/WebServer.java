@@ -1,7 +1,7 @@
-package org.paggarwal.rancherscheduler;
+package org.paggarwal.dockerscheduler;
 
 import com.google.common.io.CharStreams;
-import org.paggarwal.rancherscheduler.handlers.TaskHandler;
+import org.paggarwal.dockerscheduler.handlers.TaskHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

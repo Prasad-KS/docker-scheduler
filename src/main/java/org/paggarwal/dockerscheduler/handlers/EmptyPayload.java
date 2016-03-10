@@ -1,6 +1,6 @@
-package org.paggarwal.rancherscheduler.handlers;
+package org.paggarwal.dockerscheduler.handlers;
 
-import org.paggarwal.rancherscheduler.Validable;
+import org.paggarwal.dockerscheduler.Validable;
 
 /**
  * Created by paggarwal on 2/22/16.
