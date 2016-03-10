@@ -1,7 +1,9 @@
 package org.paggarwal.dockerscheduler;
 
 import com.google.common.io.CharStreams;
+import org.paggarwal.dockerscheduler.handlers.ScheduledTaskHandler;
 import org.paggarwal.dockerscheduler.handlers.TaskHandler;
+import org.paggarwal.dockerscheduler.models.ScheduledTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,9 @@ public class WebServer {
     @Autowired
     private TaskHandler taskHandler;
 
+    @Autowired
+    private ScheduledTaskHandler scheduledTaskHandler;
+
     public void run() {
         port(8080);
         staticFileLocation("/public");
@@ -31,5 +36,10 @@ public class WebServer {
         get("/v1/tasks",taskHandler.list());
         post("/v1/tasks",taskHandler.create());
         delete("/v1/tasks/:id",taskHandler.delete());
+
+        // Tasks
+        get("/v1/scheduledtasks",scheduledTaskHandler.list());
+        post("/v1/scheduledtasks",scheduledTaskHandler.create());
+        delete("/v1/scheduledtasks/:id",scheduledTaskHandler.delete());
     }
 }

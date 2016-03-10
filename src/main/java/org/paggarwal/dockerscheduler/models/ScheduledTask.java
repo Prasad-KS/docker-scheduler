@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import org.paggarwal.dockerscheduler.Validable;
 
 /**
  * Created by paggarwal on 3/7/16.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ScheduledTask {
+public class ScheduledTask implements Validable {
     private final long id;
     private final Task task;
     private String cron;
@@ -56,6 +57,11 @@ public class ScheduledTask {
                 .add("task", task)
                 .add("cron", cron)
                 .toString();
+    }
+
+    @Override
+    public boolean isValid() {
+        return true;
     }
 
 

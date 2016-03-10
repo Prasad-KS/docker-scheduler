@@ -1,37 +1,64 @@
-<h2>Scheduled Tasks <a class="btn btn-primary pull-right" href="#/create"><i
-        class="icon-plus-sign icon-white"></i>New Job</a></h2>
+<h2>Tasks <a class="btn btn-primary pull-right" href="#/scheduledtasks/create"><i
+        class="icon-plus-sign icon-white"></i>New Scheduled Task</a></h2>
 
 <table class="table table-hover">
     <tr>
-    <th>
-        #
-    </th>
-    <th>
-        Name
-    </th>
-    <th>
-        Created On
-    </th>
-    <th>
-        Image
-    </th>
-    <th>
-        Command
-    </th>
-    <th>
-        Schedule
-    </th>
+        <th rowspan="2">
+            #
+        </th>
+        <th rowspan="2">
+            Name
+        </th>
+        <th rowspan="2">
+            Created On
+        </th>
+        <th rowspan="2">
+            Image
+        </th>
+        <th rowspan="2">
+            Command
+        </th>
+        <th rowspan="2">
+            Schedule
+        </th>
+        <th rowspan="2">
+            Delete
+        </th>
+        <th colspan="2">
+            Executions in last 24 hours
+        </th>
     </tr>
-    <tr class="success-{{todo.done}}" ng-repeat="todo in todos">
+    <tr>
+        <th>Suceeded</th>
+        <th>Failed</th>
+    </tr>
+
+    <tr ng-repeat="scheduledtask in scheduledtasks">
         <td>{{$index+1}}</td>
         <td>
-            {{todo.title}}
+            {{scheduledtask.task.name}}
         </td>
         <td>
-            {{todo.createdOn |date:'medium'}}
+            {{scheduledtask.task.createdOn |date:'medium'}}
         </td>
         <td>
-            <input type="checkbox" ng-change="todoStatusChanged(todo)" ng-value="todo.done" ng-model="todo.done">
+            {{scheduledtask.task.image}}
         </td>
+        <td>
+            {{scheduledtask.task.command}}
+        </td>
+        <td>
+            {{scheduledtask.cron}}
+        </td>
+        <td>
+            <a ng-really-message="Are you sure?" ng-really-click="deleteScheduledTask({{scheduledtask}})"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </td>
+        <td>
+            {{scheduledtask.task.success}}
+        </td>
+        <td>
+            {{scheduledtask.task.failed}}
+        </td>
+
     </tr>
 </table>

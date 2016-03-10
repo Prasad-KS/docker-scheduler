@@ -53,11 +53,6 @@ app.controller('TaskController', function ($scope, $http, $location, $route) {
         });
     }
 
-    $scope.task = {
-        done: false
-    };
-
-
     $scope.createTask = function () {
         $http.post('/v1/tasks', $scope.task).success(function (data) {
             $location.path('/tasks');
@@ -78,27 +73,28 @@ app.controller('TaskController', function ($scope, $http, $location, $route) {
 app.controller('ScheduledTaskController', function ($scope, $http, $location, $route) {
     if($location.$$path == "/scheduledtasks") {
         $http.get('/v1/scheduledtasks').success(function (data) {
-            $scope.tasks = data;
+            $scope.scheduledtasks = data;
         }).error(function (data, status) {
             console.log('Error ' + data)
         });
     }
 
-    $scope.task = {
-        done: false
+    $scope.scheduledtask = {
+      task: {
+        type: 1
+      }
     };
 
-
-    $scope.createTask = function () {
-        $http.post('/v1/scheduledtasks', $scope.task).success(function (data) {
+    $scope.createScheduledTask = function () {
+        $http.post('/v1/scheduledtasks', $scope.scheduledtask).success(function (data) {
             $location.path('/scheduledtasks');
         }).error(function (data, status) {
             console.log('Error ' + data)
         })
     }
 
-    $scope.deleteTask = function (task) {
-        $http.delete('/v1/scheduledtasks/' + task.id).success(function (data) {
+    $scope.deleteScheduledTask = function (scheduledTask) {
+        $http.delete('/v1/scheduledtasks/' + scheduledTask.id).success(function (data) {
             $route.reload();
         }).error(function (data, status) {
             console.log('Error ' + data)
