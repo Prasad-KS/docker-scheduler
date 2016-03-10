@@ -2,6 +2,7 @@ package org.paggarwal.dockerscheduler.service.db;
 
 import org.jooq.DSLContext;
 import org.paggarwal.dockerscheduler.models.Task;
+import org.quartz.Scheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,9 @@ public class TaskService {
 
     @Inject
     private DSLContext dsl;
+
+    @Inject
+    private Scheduler scheduler;
 
     @Transactional(readOnly = true)
     public List<Task> list() {

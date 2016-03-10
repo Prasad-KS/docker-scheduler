@@ -59,5 +59,9 @@
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: cglib:cglib-nodep:3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.objenesis:objenesis:2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.quartz-scheduler:quartz:2.2.2" level="project" />
+    <orderEntry type="library" name="Gradle: c3p0:c3p0:0.9.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.quartz-scheduler:quartz-jobs:2.2.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-context-support:4.2.5.RELEASE" level="project" />
   </component>
 </module>
