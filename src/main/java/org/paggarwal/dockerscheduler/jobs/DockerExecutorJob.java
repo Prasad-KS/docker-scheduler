@@ -24,13 +24,13 @@ public class DockerExecutorJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         CreateContainerResponse response = null;
         try {
-            response = dockerClient.createContainerCmd("ubuntu").withCmd("/bin/echo", "$HELP_ME").withName("test").withEnv("HELP_ME=Hello World").
+            response = dockerClient.createContainerCmd("ubuntu").withCmd("env").withName("test").withEnv("HELP_ME=Hello World").
                     exec();
         } catch (NotFoundException e) {
             PullImageResultCallback callback = new PullImageResultCallback();
             dockerClient.pullImageCmd("ubuntu:latest").exec(callback);
             callback.awaitSuccess();
-            response = dockerClient.createContainerCmd("ubuntu").withCmd("/bin/echo", "$HELP_ME").withName("test").withEnv("HELP_ME=Hello World").
+            response = dockerClient.createContainerCmd("ubuntu").withCmd("env").withName("test").withEnv("HELP_ME=Hello World").
                     exec();
         }
 
@@ -46,7 +46,5 @@ public class DockerExecutorJob implements Job {
         System.out.println(waitContainerResultCallback.awaitStatusCode());
         dockerClient.removeContainerCmd(response.getId()).exec();
         System.out.println("Finished");
-
-
     }
 }

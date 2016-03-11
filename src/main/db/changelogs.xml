@@ -34,6 +34,7 @@
             </column>
         </createTable>
     </changeSet>
+
     <changeSet author="paggarwal" id="2">
         <createTable tableName="SCHEDULED_TASKS">
             <column autoIncrement="true" name="id" type="INT">
@@ -48,7 +49,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="quartz.generated" id="1">
+    <changeSet author="paggarwal" id="3">
 
         <createTable tableName="QRTZ_CALENDARS">
             <column name="SCHED_NAME" type="NVARCHAR(100)">
@@ -271,7 +272,7 @@
 
     </changeSet>
 
-    <changeSet author="quartz.generated" id="2">
+    <changeSet author="paggarwal" id="4">
 
         <addForeignKeyConstraint baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP" baseTableName="QRTZ_CRON_TRIGGERS" constraintName="FK_QRTZ_CRON_TRIGGERS_QRTZ_TRIGGERS"
                                  deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
@@ -291,7 +292,7 @@
 
     </changeSet>
 
-    <changeSet author="quartz.generated" id="3">
+    <changeSet author="paggarwal" id="5">
 
         <createIndex indexName="IDX_QRTZ_T_J" tableName="QRTZ_TRIGGERS">
             <column name="SCHED_NAME" />
@@ -397,5 +398,18 @@
             <column name="TRIGGER_GROUP" />
         </createIndex>
 
+    </changeSet>
+    <changeSet author="paggarwal" id="6">
+        <createTable tableName="ENVIRONMENT_VARIABLES">
+        <column autoIncrement="true" name="id" type="INT">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="name" type="VARCHAR(128)">
+            <constraints nullable="false" unique="true" uniqueConstraintName="U_ENVIRONMENT_VARIABLE_NAME"/>
+        </column>
+        <column name="value" type="VARCHAR(1024)">
+            <constraints nullable="false"/>
+        </column>
+    </createTable>
     </changeSet>
 </databaseChangeLog>
