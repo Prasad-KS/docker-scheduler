@@ -41,7 +41,7 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
 
     compile 'com.sparkjava:spark-core:2.3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.4'
 
     compile 'mysql:mysql-connector-java:5.1.38'
     compile 'org.jooq:jooq:3.7.2'
@@ -51,12 +51,14 @@ dependencies {
     compile 'org.springframework:spring-core:4.2.5.RELEASE'
     compile 'org.springframework:spring-context:4.2.5.RELEASE'
     compile 'org.springframework:spring-context-support:4.2.5.RELEASE'
+
     compile 'org.springframework:spring-tx:4.2.5.RELEASE'
     compile 'org.springframework:spring-jdbc:4.2.5.RELEASE'
 
     compile 'org.quartz-scheduler:quartz:2.2.2'
     compile 'org.quartz-scheduler:quartz-jobs:2.2.2'
 
+    compile 'com.github.docker-java:docker-java:3.0.0-RC3'
 
     // mandatory dependencies for using Spock
     compile "org.codehaus.groovy:groovy-all:2.4.1"

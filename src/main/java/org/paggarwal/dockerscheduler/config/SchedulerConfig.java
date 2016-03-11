@@ -1,21 +1,15 @@
 package org.paggarwal.dockerscheduler.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.impl.jdbcjobstore.JobStoreTX;
-import org.quartz.impl.jdbcjobstore.StdJDBCDelegate;
-import org.quartz.impl.matchers.GroupMatcher;
-import org.quartz.simpl.SimpleThreadPool;
-import org.quartz.spi.JobFactory;
+import org.paggarwal.dockerscheduler.jobs.InjectionCapableJobFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.*;
+import java.util.Properties;
 
 import static org.quartz.impl.StdSchedulerFactory.*;
 
@@ -30,7 +24,7 @@ public class SchedulerConfig {
 
     @Bean
     @Inject
-    public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource) throws Exception {
+    public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource, ApplicationContext applicationContext) throws Exception {
         Properties quartzProperties = new Properties();
         quartzProperties.setProperty(PROP_SCHED_INSTANCE_NAME, "DockerScheduler");
         quartzProperties.setProperty(PROP_SCHED_INSTANCE_ID, "SchedulerMaster");
@@ -46,6 +40,7 @@ public class SchedulerConfig {
         schedulerFactoryBean.setSchedulerName("DockerScheduler");
         schedulerFactoryBean.setQuartzProperties(quartzProperties);
         schedulerFactoryBean.setOverwriteExistingJobs(false);
+        schedulerFactoryBean.setJobFactory(new InjectionCapableJobFactory(applicationContext.getAutowireCapableBeanFactory()));
         return schedulerFactoryBean;
     }
 }
