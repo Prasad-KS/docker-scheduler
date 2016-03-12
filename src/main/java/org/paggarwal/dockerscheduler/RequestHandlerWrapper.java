@@ -1,5 +1,6 @@
 package org.paggarwal.dockerscheduler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,7 +18,7 @@ import java.util.function.BiFunction;
  */
 public class RequestHandlerWrapper<V extends Validable> implements RequestHandler<V>,Route {
 
-    private Class<V> valueClass;
+    private TypeReference<V> valueClass;
     private BiFunction<V,Map<String,String>,Answer> handler;
     private static final int HTTP_BAD_REQUEST = 400;
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -26,7 +27,7 @@ public class RequestHandlerWrapper<V extends Validable> implements RequestHandle
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public RequestHandlerWrapper(Class<V> valueClass, BiFunction<V,Map<String,String>,Answer> handler) {
+    public RequestHandlerWrapper(TypeReference<V> valueClass, BiFunction<V,Map<String,String>,Answer> handler) {
         this.valueClass = valueClass;
         this.handler = handler;
     }
@@ -53,7 +54,7 @@ public class RequestHandlerWrapper<V extends Validable> implements RequestHandle
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             V value = null;
-            if (valueClass != EmptyPayload.class) {
+            if (valueClass != EmptyPayload.TYPE_REFERENCE) {
                 value = objectMapper.readValue(request.body(), valueClass);
             }
             Map<String, String> urlParams = request.params();

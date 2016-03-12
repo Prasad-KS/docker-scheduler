@@ -16,7 +16,7 @@ public class DockerConfig {
     @Bean
     public DockerClient dockerClient() {
         DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost("tcp://peeyush-Studio-1558:2375")
+                .withDockerHost("unix:///var/run/docker.sock")
                 .withDockerTlsVerify(false)
                 .build();
         return DockerClientBuilder.getInstance(config).build();

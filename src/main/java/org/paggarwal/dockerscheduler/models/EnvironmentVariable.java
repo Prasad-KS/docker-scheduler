@@ -3,20 +3,24 @@ package org.paggarwal.dockerscheduler.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import org.paggarwal.dockerscheduler.Validable;
 
 /**
  * Created by peeyushaggarwal on 3/10/16.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EnvironmentVariable {
+public class EnvironmentVariable implements Validable {
+    public static final TypeReference<EnvironmentVariable> TYPE_REFERENCE = new TypeReference<EnvironmentVariable>() {};
+
     private int id;
     private String name;
     private String value;
 
     @JsonCreator
-    public EnvironmentVariable(@JsonProperty int id,@JsonProperty String name,@JsonProperty String value) {
+    public EnvironmentVariable(@JsonProperty("id") int id,@JsonProperty("name") String name,@JsonProperty("value") String value) {
         this.id = id;
         this.name = name;
         this.value = value;
@@ -56,6 +60,11 @@ public class EnvironmentVariable {
                 .add("name", name)
                 .add("value", value)
                 .toString();
+    }
+
+    @Override
+    public boolean isValid() {
+        return true;
     }
 
 

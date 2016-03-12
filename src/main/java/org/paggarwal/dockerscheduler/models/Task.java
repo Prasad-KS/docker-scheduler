@@ -3,10 +3,12 @@ package org.paggarwal.dockerscheduler.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.paggarwal.dockerscheduler.Validable;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 
 /**
@@ -14,6 +16,7 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task implements Validable {
+    public static final TypeReference<Task> TYPE_REFERENCE = new TypeReference<Task>() {};
 
     private long id;
     private String name;

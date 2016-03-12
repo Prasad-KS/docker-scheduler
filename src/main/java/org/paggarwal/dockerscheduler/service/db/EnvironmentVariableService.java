@@ -30,13 +30,6 @@ public class EnvironmentVariableService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Integer create(EnvironmentVariable environmentVariable) {
-        return dsl.insertInto(ENVIRONMENT_VARIABLES).columns(ENVIRONMENT_VARIABLES.NAME
-                , ENVIRONMENT_VARIABLES.VALUE).values(environmentVariable.getName(), environmentVariable.getValue())
-                .returning(ENVIRONMENT_VARIABLES.ID).fetchOne().getId();
-    }
-
-    @Transactional(rollbackFor = Exception.class)
     public boolean create(List<EnvironmentVariable> environmentVariables) {
         return Arrays.stream(dsl.batch(
                 environmentVariables.stream().map(environmentVariable -> dsl.insertInto(ENVIRONMENT_VARIABLES).columns(ENVIRONMENT_VARIABLES.NAME
