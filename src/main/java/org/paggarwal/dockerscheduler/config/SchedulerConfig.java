@@ -19,7 +19,7 @@ import static org.quartz.impl.StdSchedulerFactory.*;
 @Configuration
 public class SchedulerConfig {
 
-    @Value("#{ systemEnvironment['SCHEDULER_THREAD_COUNT'] ?: 1 }")
+    @Value("#{ systemEnvironment['SCHEDULER_THREAD_COUNT'] ?: 10 }")
     private int threadCount;
 
     @Bean
@@ -36,7 +36,7 @@ public class SchedulerConfig {
 
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
         schedulerFactoryBean.setDataSource(dataSource);
-        schedulerFactoryBean.setAutoStartup(true);
+        schedulerFactoryBean.setAutoStartup(false);
         schedulerFactoryBean.setSchedulerName("DockerScheduler");
         schedulerFactoryBean.setQuartzProperties(quartzProperties);
         schedulerFactoryBean.setOverwriteExistingJobs(false);

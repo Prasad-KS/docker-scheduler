@@ -1,13 +1,19 @@
 package org.paggarwal.dockerscheduler.service.db;
 
+import com.google.common.base.Throwables;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
+import org.paggarwal.dockerscheduler.jobs.DockerExecutorJob;
 import org.paggarwal.dockerscheduler.models.ScheduledTask;
 import org.paggarwal.dockerscheduler.models.Task;
+import org.quartz.*;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +25,9 @@ import static org.paggarwal.dockerscheduler.generated.tables.ScheduledTasks.SCHE
  */
 @Service
 public class ScheduledTaskService {
+
+    @Inject
+    private Scheduler scheduler;
 
     @Inject
     private DSLContext dsl;
@@ -42,11 +51,22 @@ public class ScheduledTaskService {
                         .build());
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public Integer create(ScheduledTask scheduledTask) {
-        int taskId = dsl.insertInto(TASKS).columns(TASKS.NAME
-                , TASKS.IMAGE, TASKS.COMMAND, TASKS.TYPE).values(scheduledTask.getTask().getName(), scheduledTask.getTask().getImage(), scheduledTask.getTask().getCommand(),scheduledTask.getTask().getType()).returning(TASKS.ID).fetchOne().getId();
-        return dsl.insertInto(SCHEDULED_TASKS).columns(SCHEDULED_TASKS.TASK_ID, SCHEDULED_TASKS.CRON).values(taskId, scheduledTask.getCron()).returning(SCHEDULED_TASKS.ID).fetchOne().getId();
+        try {
+            int taskId = dsl.insertInto(TASKS).columns(TASKS.NAME
+                    , TASKS.IMAGE, TASKS.COMMAND, TASKS.TYPE).values(scheduledTask.getTask().getName(), scheduledTask.getTask().getImage(), scheduledTask.getTask().getCommand(), scheduledTask.getTask().getType()).returning(TASKS.ID).fetchOne().getId();
+            int scheduledTaskId = dsl.insertInto(SCHEDULED_TASKS).columns(SCHEDULED_TASKS.TASK_ID, SCHEDULED_TASKS.CRON).values(taskId, scheduledTask.getCron()).returning(SCHEDULED_TASKS.ID).fetchOne().getId();
+
+            JobDetail jobDetail = JobBuilder.newJob(DockerExecutorJob.class).usingJobData("TASK_ID",Integer.toString(taskId)).requestRecovery().storeDurably().withIdentity(scheduledTask.getTask().getName(), "ScheduledTask").build();
+            CronTriggerImpl trigger = new CronTriggerImpl();
+            trigger.setCronExpression(scheduledTask.getCron());
+            trigger.setKey(TriggerKey.triggerKey(scheduledTask.getTask().getName(),"ScheduledTask"));
+            scheduler.scheduleJob(jobDetail, trigger);
+            return scheduledTaskId;
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

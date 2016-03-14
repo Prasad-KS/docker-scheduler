@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
 
@@ -26,6 +27,11 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<Task> list() {
         return dsl.selectFrom(TASKS).where(TASKS.TYPE.equal(0)).fetchInto(Task.class);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Task> get(int id) {
+        return dsl.selectFrom(TASKS).where(TASKS.ID.equal(id)).fetchInto(Task.class).stream().findFirst();
     }
 
     @Transactional(rollbackFor = Exception.class)

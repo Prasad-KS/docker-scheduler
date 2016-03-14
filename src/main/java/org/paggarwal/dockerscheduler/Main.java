@@ -23,8 +23,11 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Main.class);
+        DockerExecutorJob job = new DockerExecutorJob();
+        ctx.getAutowireCapableBeanFactory().autowireBean(job);
+        job.execute(null);
         //updateDatabase(ctx);
-        ctx.getBean(WebServer.class).run();
+        //ctx.getBean(WebServer.class).run();
     }
 
     private static void updateDatabase(AnnotationConfigApplicationContext ctx) throws SQLException, LiquibaseException {
