@@ -1,13 +1,10 @@
 package org.paggarwal.dockerscheduler.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import org.paggarwal.dockerscheduler.Answer;
 import org.paggarwal.dockerscheduler.RequestHandlerWrapper;
 import org.paggarwal.dockerscheduler.models.ScheduledTask;
-import org.paggarwal.dockerscheduler.models.Task;
-import org.paggarwal.dockerscheduler.service.db.ScheduledTaskService;
-import org.paggarwal.dockerscheduler.service.db.TaskService;
+import org.paggarwal.dockerscheduler.service.ScheduledTaskService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

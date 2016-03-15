@@ -6,33 +6,36 @@ import org.jooq.Record1;
 import org.paggarwal.dockerscheduler.jobs.DockerExecutorJob;
 import org.paggarwal.dockerscheduler.models.ScheduledTask;
 import org.paggarwal.dockerscheduler.models.Task;
-import org.quartz.*;
-import org.quartz.impl.JobDetailImpl;
+import org.paggarwal.dockerscheduler.service.ScheduledTaskService;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.TriggerKey;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
 import static org.paggarwal.dockerscheduler.generated.tables.ScheduledTasks.SCHEDULED_TASKS;
+import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
 
 /**
  * Created by paggarwal on 3/2/16.
  */
 @Service
-public class ScheduledTaskService {
-
-    @Inject
-    private Scheduler scheduler;
+public class ScheduledTaskServiceImpl implements ScheduledTaskService {
 
     @Inject
     private DSLContext dsl;
 
+    @Inject
+    private Scheduler scheduler;
+
     @Transactional(readOnly = true)
+    @Override
     public List<ScheduledTask> list() {
         return dsl.selectFrom(TASKS.join(SCHEDULED_TASKS).on(SCHEDULED_TASKS.TASK_ID.equal(TASKS.ID)))
                 .fetch(record -> ScheduledTask.Builder.aScheduledTask()
@@ -52,6 +55,7 @@ public class ScheduledTaskService {
     }
 
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
+    @Override
     public Integer create(ScheduledTask scheduledTask) {
         try {
             int taskId = dsl.insertInto(TASKS).columns(TASKS.NAME
@@ -70,6 +74,7 @@ public class ScheduledTaskService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public boolean delete(int id) {
         Optional<Record1<Integer>> taskIdOptional = dsl.select(SCHEDULED_TASKS.TASK_ID).from(SCHEDULED_TASKS).where(SCHEDULED_TASKS.ID.equal(id)).fetchOptional();
         if (taskIdOptional.isPresent()) {

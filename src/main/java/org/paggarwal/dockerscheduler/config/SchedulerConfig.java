@@ -19,7 +19,10 @@ import static org.quartz.impl.StdSchedulerFactory.*;
 @Configuration
 public class SchedulerConfig {
 
-    @Value("#{ systemEnvironment['SCHEDULER_THREAD_COUNT'] ?: 10 }")
+    @Value("#{ systemEnvironment['IS_MASTER'] ?: true }")
+    private boolean isMaster;
+
+    @Value("#{ systemEnvironment['SCHEDULER_THREAD_COUNT'] ?: 1 }")
     private int threadCount;
 
     @Bean
@@ -27,11 +30,17 @@ public class SchedulerConfig {
     public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource, ApplicationContext applicationContext) throws Exception {
         Properties quartzProperties = new Properties();
         quartzProperties.setProperty(PROP_SCHED_INSTANCE_NAME, "DockerScheduler");
-        quartzProperties.setProperty(PROP_SCHED_INSTANCE_ID, "SchedulerMaster");
+
         quartzProperties.setProperty(PROP_SCHED_JMX_EXPORT, Boolean.TRUE.toString());
         quartzProperties.setProperty(PROP_SCHED_SKIP_UPDATE_CHECK, Boolean.TRUE.toString());
         quartzProperties.setProperty(PROP_JOB_STORE_PREFIX + ".isClustered", Boolean.TRUE.toString());
         quartzProperties.setProperty(PROP_THREAD_POOL_PREFIX + ".threadCount", Integer.toString(threadCount));
+
+        if(isMaster) {
+            quartzProperties.setProperty(PROP_SCHED_INSTANCE_ID, "SchedulerMaster");
+        } else {
+            quartzProperties.setProperty(PROP_SCHED_INSTANCE_ID, "AUTO");
+        }
 
 
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
@@ -41,6 +50,7 @@ public class SchedulerConfig {
         schedulerFactoryBean.setQuartzProperties(quartzProperties);
         schedulerFactoryBean.setOverwriteExistingJobs(false);
         schedulerFactoryBean.setJobFactory(new InjectionCapableJobFactory(applicationContext.getAutowireCapableBeanFactory()));
+        schedulerFactoryBean.setAutoStartup(true);
         return schedulerFactoryBean;
     }
 }

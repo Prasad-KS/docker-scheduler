@@ -9,10 +9,9 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.paggarwal.dockerscheduler.jobs.DockerExecutorJob;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.sql.SQLException;
 /**
@@ -26,7 +25,6 @@ public class Main {
         DockerExecutorJob job = new DockerExecutorJob();
         ctx.getAutowireCapableBeanFactory().autowireBean(job);
         job.execute(null);
-        //updateDatabase(ctx);
         //ctx.getBean(WebServer.class).run();
     }
 

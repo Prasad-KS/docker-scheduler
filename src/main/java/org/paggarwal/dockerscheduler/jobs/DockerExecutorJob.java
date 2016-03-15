@@ -8,8 +8,8 @@ import com.github.dockerjava.core.command.LogContainerResultCallback;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import org.paggarwal.dockerscheduler.models.Task;
-import org.paggarwal.dockerscheduler.service.db.EnvironmentVariableService;
-import org.paggarwal.dockerscheduler.service.db.TaskService;
+import org.paggarwal.dockerscheduler.service.EnvironmentVariableService;
+import org.paggarwal.dockerscheduler.service.TaskService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,9 +26,6 @@ public class DockerExecutorJob implements Job {
     private DockerClient dockerClient;
 
     @Inject
-    private com.spotify.docker.client.DockerClient spotifyDockerClient;
-
-    @Inject
     private EnvironmentVariableService environmentVariableService;
 
     @Inject
@@ -37,7 +34,7 @@ public class DockerExecutorJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         System.out.println("Starting job");
-        int taskId = 7;//context.getMergedJobDataMap().getIntFromString("TASK_ID");
+        int taskId = 1;//context.getMergedJobDataMap().getIntFromString("TASK_ID");
 
         System.out.println(taskId);
         Optional<Task> taskOpt = taskService.get(taskId);
@@ -54,27 +51,24 @@ public class DockerExecutorJob implements Job {
 
 
     private void runDockerImage(String image, String command, String name) {
+        LogHandler logHandler = new LogHandler();
         CreateContainerResponse response = null;
 
         try {
-
             response = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVariableService.list().stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList())).exec();
         } catch (NotFoundException e) {
             PullImageResultCallback callback = new PullImageResultCallback();
-            dockerClient.pullImageCmd(image)..exec(callback);
+            dockerClient.pullImageCmd(image).exec(callback);
             callback.awaitSuccess();
             response = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVariableService.list().stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList())).exec();
         }
         dockerClient.startContainerCmd(response.getId()).exec();
-        dockerClient.logContainerCmd(response.getId()).withStdOut(true).withStdErr(true).withFollowStream(true).exec(new LogContainerResultCallback() {
-            @Override
-            public void onNext(Frame item) {
-                System.out.println(item.toString());
-            }
-        });
+        dockerClient.logContainerCmd(response.getId()).withStdOut(true).withStdErr(true).withFollowStream(true).exec(logHandler);
         WaitContainerResultCallback waitContainerResultCallback = new WaitContainerResultCallback();
         dockerClient.waitContainerCmd(response.getId()).exec(waitContainerResultCallback);
         System.out.println(waitContainerResultCallback.awaitStatusCode());
         dockerClient.removeContainerCmd(response.getId()).exec();
+        System.out.println(logHandler.getStdOut());
+        System.out.println(logHandler.getStdErr());
     }
 }

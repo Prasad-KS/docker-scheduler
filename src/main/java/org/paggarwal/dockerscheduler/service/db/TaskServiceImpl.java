@@ -2,6 +2,7 @@ package org.paggarwal.dockerscheduler.service.db;
 
 import org.jooq.DSLContext;
 import org.paggarwal.dockerscheduler.models.Task;
+import org.paggarwal.dockerscheduler.service.TaskService;
 import org.quartz.Scheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
  * Created by paggarwal on 3/2/16.
  */
 @Service
-public class TaskService {
+public class TaskServiceImpl implements TaskService {
 
     @Inject
     private DSLContext dsl;

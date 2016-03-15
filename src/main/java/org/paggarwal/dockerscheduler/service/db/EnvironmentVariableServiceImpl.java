@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.paggarwal.dockerscheduler.models.EnvironmentVariable;
 import org.paggarwal.dockerscheduler.models.Task;
+import org.paggarwal.dockerscheduler.service.EnvironmentVariableService;
 import org.quartz.Scheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +20,20 @@ import static org.paggarwal.dockerscheduler.generated.tables.EnvironmentVariable
  * Created by paggarwal on 3/2/16.
  */
 @Service
-public class EnvironmentVariableService {
+public class EnvironmentVariableServiceImpl implements org.paggarwal.dockerscheduler.service.EnvironmentVariableService {
 
     @Inject
     private DSLContext dsl;
 
+
     @Transactional(readOnly = true)
+    @Override
     public List<EnvironmentVariable> list() {
         return dsl.selectFrom(ENVIRONMENT_VARIABLES).fetchInto(EnvironmentVariable.class);
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public boolean create(List<EnvironmentVariable> environmentVariables) {
         return Arrays.stream(dsl.batch(
                 environmentVariables.stream().map(environmentVariable -> dsl.insertInto(ENVIRONMENT_VARIABLES).columns(ENVIRONMENT_VARIABLES.NAME
@@ -38,13 +42,16 @@ public class EnvironmentVariableService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public boolean update(EnvironmentVariable environmentVariable) {
         return dsl.update(ENVIRONMENT_VARIABLES).set(ENVIRONMENT_VARIABLES.VALUE,
                 environmentVariable.getValue()).where(ENVIRONMENT_VARIABLES.ID.equal(environmentVariable.getId()))
                 .execute() > 0;
     }
 
+
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public boolean delete(int id) {
         return dsl.delete(ENVIRONMENT_VARIABLES).where(ENVIRONMENT_VARIABLES.ID.equal(id)).execute() > 0;
     }

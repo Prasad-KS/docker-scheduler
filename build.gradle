@@ -54,13 +54,15 @@ dependencies {
 
     compile 'org.springframework:spring-tx:4.2.5.RELEASE'
     compile 'org.springframework:spring-jdbc:4.2.5.RELEASE'
+    compile 'org.springframework:spring-aspects:4.2.5.RELEASE'
+
+    compile 'org.springframework:spring-aop:4.2.5.RELEASE'
+
 
     compile 'org.quartz-scheduler:quartz:2.2.2'
     compile 'org.quartz-scheduler:quartz-jobs:2.2.2'
 
     compile 'com.github.docker-java:docker-java:3.0.0-RC3'
-
-    compile 'com.spotify:docker-client:3.6.3'
 
     // mandatory dependencies for using Spock
     compile "org.codehaus.groovy:groovy-all:2.4.1"
