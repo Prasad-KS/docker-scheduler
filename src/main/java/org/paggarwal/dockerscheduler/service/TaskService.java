@@ -12,7 +12,9 @@ import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
  * Created by paggarwal on 3/14/16.
  */
 public interface TaskService {
-    List<Task> list();
+    List<Task> listScheduledTasks();
+
+    List<Task> listTasks();
 
     Optional<Task> get(int id);
 

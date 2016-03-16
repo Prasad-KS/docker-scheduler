@@ -3,6 +3,7 @@ package org.paggarwal.dockerscheduler.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -16,6 +17,20 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task implements Validable {
+    public static enum Type {
+        TASK,SCHEDULED_TASK;
+
+        @JsonCreator
+        public static Type forValue(String value) {
+            return valueOf(value);
+        }
+
+        @JsonValue
+        public String toValue() {
+            return name();
+        }
+    }
+
     public static final TypeReference<Task> TYPE_REFERENCE = new TypeReference<Task>() {};
 
     private long id;
@@ -23,9 +38,10 @@ public class Task implements Validable {
     private Date createdOn;
     private String image;
     private String command;
-    private int type;
+    private Type type;
     private long success;
     private long failed;
+    private String cron;
 
 
     @JsonCreator
@@ -34,9 +50,10 @@ public class Task implements Validable {
                 @JsonProperty("createdOn") Date createdOn,
                 @JsonProperty("image") String image,
                 @JsonProperty("command") String command,
-                @JsonProperty("type") int type,
+                @JsonProperty("type") Type type,
                 @JsonProperty("success") long success,
-                @JsonProperty("failed") long failed) {
+                @JsonProperty("failed") long failed,
+                @JsonProperty("cron") String cron) {
         this.id = id;
         this.name = name;
         this.createdOn = createdOn;
@@ -45,6 +62,7 @@ public class Task implements Validable {
         this.type = type;
         this.success = success;
         this.failed = failed;
+        this.cron = cron;
     }
 
     public long getId() {
@@ -67,7 +85,7 @@ public class Task implements Validable {
         return command;
     }
 
-    public int getType() {
+    public Type getType() {
         return type;
     }
 
@@ -77,6 +95,10 @@ public class Task implements Validable {
 
     public long getFailed() {
         return failed;
+    }
+
+    public String getCron() {
+        return cron;
     }
 
     @Override
@@ -91,12 +113,13 @@ public class Task implements Validable {
                 Objects.equal(getName(), task.getName()) &&
                 Objects.equal(getCreatedOn(), task.getCreatedOn()) &&
                 Objects.equal(getImage(), task.getImage()) &&
-                Objects.equal(getCommand(), task.getCommand());
+                Objects.equal(getCommand(), task.getCommand()) &&
+                Objects.equal(getCron(), task.getCron());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId(), getName(), getCreatedOn(), getImage(), getCommand(), getType(), getSuccess(), getFailed());
+        return Objects.hashCode(getId(), getName(), getCreatedOn(), getImage(), getCommand(), getType(), getSuccess(), getFailed(), getCron());
     }
 
     @Override
@@ -110,6 +133,7 @@ public class Task implements Validable {
                 .add("type", type)
                 .add("success", success)
                 .add("failed", failed)
+                .add("cron", cron)
                 .toString();
     }
 
@@ -118,16 +142,16 @@ public class Task implements Validable {
         return true;
     }
 
-
     public static class Builder {
         private long id;
         private String name;
         private Date createdOn;
         private String image;
         private String command;
-        private int type;
+        private Type type;
         private long success;
         private long failed;
+        private String cron;
 
         private Builder() {
         }
@@ -161,7 +185,7 @@ public class Task implements Validable {
             return this;
         }
 
-        public Builder withType(int type) {
+        public Builder withType(Type type) {
             this.type = type;
             return this;
         }
@@ -176,12 +200,17 @@ public class Task implements Validable {
             return this;
         }
 
+        public Builder withCron(String cron) {
+            this.cron = cron;
+            return this;
+        }
+
         public Builder but() {
-            return aTask().withId(id).withName(name).withCreatedOn(createdOn).withImage(image).withCommand(command).withType(type).withSuccess(success).withFailed(failed);
+            return aTask().withId(id).withName(name).withCreatedOn(createdOn).withImage(image).withCommand(command).withType(type).withSuccess(success).withFailed(failed).withCron(cron);
         }
 
         public Task build() {
-            Task task = new Task(id, name, createdOn, image, command, type, success, failed);
+            Task task = new Task(id, name, createdOn, image, command, type, success, failed, cron);
             return task;
         }
     }

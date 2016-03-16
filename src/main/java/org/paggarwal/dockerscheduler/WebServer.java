@@ -2,7 +2,6 @@ package org.paggarwal.dockerscheduler;
 
 import com.google.common.io.CharStreams;
 import org.paggarwal.dockerscheduler.handlers.EnvironmentVariableHandler;
-import org.paggarwal.dockerscheduler.handlers.ScheduledTaskHandler;
 import org.paggarwal.dockerscheduler.handlers.TaskHandler;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +19,6 @@ public class WebServer {
     private TaskHandler taskHandler;
 
     @Inject
-    private ScheduledTaskHandler scheduledTaskHandler;
-
-    @Inject
     private EnvironmentVariableHandler environmentVariableHandler;
 
     public void run() {
@@ -36,14 +32,10 @@ public class WebServer {
         get("/", (request, response) -> CharStreams.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("public/index.html"))));
 
         // Tasks
-        get("/v1/tasks",taskHandler.list());
+        get("/v1/tasks",taskHandler.listTasks());
+        get("/v1/scheduledtasks",taskHandler.listScheduledTasks());
         post("/v1/tasks",taskHandler.create());
         delete("/v1/tasks/:id",taskHandler.delete());
-
-        // Scheduled Tasks
-        get("/v1/scheduledtasks",scheduledTaskHandler.list());
-        post("/v1/scheduledtasks",scheduledTaskHandler.create());
-        delete("/v1/scheduledtasks/:id",scheduledTaskHandler.delete());
 
         // Environment Variables
         get("/v1/environmentvariables",environmentVariableHandler.list());

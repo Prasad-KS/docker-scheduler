@@ -18,11 +18,11 @@
         <th rowspan="2">
             Command
         </th>
-        <th rowspan="2">
-            Delete
-        </th>
         <th colspan="2">
             Executions in last 24 hours
+        </th>
+        <th rowspan="2">
+            Delete
         </th>
     </tr>
     <tr>
@@ -45,14 +45,16 @@
             {{task.command}}
         </td>
         <td>
-            <a ng-really-message="Are you sure?" ng-really-click="deleteTask({{task}})"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-        </td>
-        <td>
             {{task.success}}
         </td>
         <td>
             {{task.failed}}
         </td>
-
+        <td>
+            <button type="button" ng-really-message="Are you sure?" ng-really-click="deleteTask({{task}})"
+                    class="btn btn-danger pull-right">
+                Delete
+            </button>
+        </td>
     </tr>
 </table>

@@ -1,11 +1,7 @@
-package org.paggarwal.dockerscheduler.service.db;
+package org.paggarwal.dockerscheduler.service.impl;
 
-import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.paggarwal.dockerscheduler.models.EnvironmentVariable;
-import org.paggarwal.dockerscheduler.models.Task;
-import org.paggarwal.dockerscheduler.service.EnvironmentVariableService;
-import org.quartz.Scheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

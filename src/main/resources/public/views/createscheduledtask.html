@@ -1,24 +1,24 @@
-<form class="form-horizontal" role="form" ng-submit="createScheduledTask()">
+<form class="form-horizontal" role="form" ng-submit="createTask()">
     <div class="form-group">
         <label for="name" class="col-sm-2 control-label">Name</label>
 
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="name" placeholder="Task Name..." ng-model="scheduledtask.task.name">
+            <input type="text" class="form-control" id="name" placeholder="Task Name..." ng-model="task.name">
         </div>
 
         <label for="image" class="col-sm-2 control-label">Docker Image</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="image" placeholder="e.g. registry.thrively.com/bloom-api/master:v1 ..." ng-model="scheduledtask.task.image">
+            <input type="text" class="form-control" id="image" placeholder="e.g. registry.thrively.com/bloom-api/master:v1 ..." ng-model="task.image">
         </div>
 
         <label for="command" class="col-sm-2 control-label">Command</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="command" placeholder="e.g. ./run.sh ..." ng-model="scheduledtask.task.command">
+            <input type="text" class="form-control" id="command" placeholder="e.g. ./run.sh ..." ng-model="task.command">
         </div>
 
         <label for="command" class="col-sm-2 control-label">Schedule</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="cron" placeholder="e.g. * * * * ? *" ng-model="scheduledtask.cron">
+            <quartz-cron-selection output="task.cron"></quartz-cron-selection>
         </div>
 
     </div>

@@ -21,11 +21,11 @@
         <th rowspan="2">
             Schedule
         </th>
-        <th rowspan="2">
-            Delete
-        </th>
         <th colspan="2">
             Executions in last 24 hours
+        </th>
+        <th rowspan="2">
+            Delete
         </th>
     </tr>
     <tr>
@@ -33,32 +33,34 @@
         <th>Failed</th>
     </tr>
 
-    <tr ng-repeat="scheduledtask in scheduledtasks">
+    <tr ng-repeat="task in tasks">
         <td>{{$index+1}}</td>
         <td>
-            {{scheduledtask.task.name}}
+            {{task.name}}
         </td>
         <td>
-            {{scheduledtask.task.createdOn |date:'medium'}}
+            {{task.createdOn |date:'medium'}}
         </td>
         <td>
-            {{scheduledtask.task.image}}
+            {{task.image}}
         </td>
         <td>
-            {{scheduledtask.task.command}}
+            {{task.command}}
         </td>
         <td>
-            {{scheduledtask.cron}}
+            {{task.cron}}
         </td>
         <td>
-            <a ng-really-message="Are you sure?" ng-really-click="deleteScheduledTask({{scheduledtask}})"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            {{task.success}}
         </td>
         <td>
-            {{scheduledtask.task.success}}
+            {{task.failed}}
         </td>
         <td>
-            {{scheduledtask.task.failed}}
+            <button type="button" ng-really-message="Are you sure?" ng-really-click="deleteTask({{task}})"
+                    class="btn btn-danger pull-right">
+                Delete
+            </button>
         </td>
-
     </tr>
 </table>

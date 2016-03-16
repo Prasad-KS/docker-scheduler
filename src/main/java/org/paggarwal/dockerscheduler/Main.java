@@ -22,10 +22,10 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Main.class);
-        DockerExecutorJob job = new DockerExecutorJob();
+        /*DockerExecutorJob job = new DockerExecutorJob();
         ctx.getAutowireCapableBeanFactory().autowireBean(job);
-        job.execute(null);
-        //ctx.getBean(WebServer.class).run();
+        job.execute(null);*/
+        ctx.getBean(WebServer.class).run();
     }
 
     private static void updateDatabase(AnnotationConfigApplicationContext ctx) throws SQLException, LiquibaseException {
@@ -35,7 +35,7 @@ public class Main {
             c = DataSourceUtils.doGetConnection(ds);
             Liquibase liquibase = null;
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(c));
-            liquibase = new Liquibase("src/main/db/changelogs.xml", new FileSystemResourceAccessor(), database);
+            liquibase = new Liquibase("src/main/impl/changelogs.xml", new FileSystemResourceAccessor(), database);
             Contexts contexts = new Contexts();
             liquibase.update(contexts);
         } finally {

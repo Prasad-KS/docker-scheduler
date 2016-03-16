@@ -3,6 +3,7 @@ package org.paggarwal.dockerscheduler.config;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
+import com.google.common.io.Files;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,7 @@ public class DockerConfig {
     @Value("#{ systemEnvironment['REGISTRY_EMAIL'] }")
     private String registryEmail;
 
-    @Value("#{ systemEnvironment['DOCKER_HOST'] ?: 'unix:///var/run/docker.sock' }")
+    @Value("#{ systemEnvironment['DOCKER_URL'] ?: 'unix:///var/run/docker.sock' }")
     private String dockerHost;
 
     @Bean
@@ -38,8 +39,9 @@ public class DockerConfig {
                     .withRegistryUsername(registryUsername)
                     .withRegistryPassword(registryPassword)
                     .withRegistryEmail(registryEmail);
-
         }
+
+
 
         return DockerClientBuilder.getInstance(configBuilder.build()).build();
     }

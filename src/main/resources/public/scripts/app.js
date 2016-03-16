@@ -8,7 +8,8 @@ var app = angular.module('dockerscheduler', [
     'ngSanitize',
     'ngRoute',
     'ui.bootstrap',
-    'xeditable'
+    'xeditable',
+    'angular-quartz-cron'
 ]);
 
 app.config(function ($routeProvider) {
@@ -22,10 +23,10 @@ app.config(function ($routeProvider) {
         controller: 'TaskController'
     }).when('/scheduledtasks', {
         templateUrl: 'views/scheduledtasks.html',
-        controller: 'ScheduledTaskController'
+        controller: 'TaskController'
     }).when('/scheduledtasks/create', {
         templateUrl: 'views/createscheduledtask.html',
-        controller: 'ScheduledTaskController'
+        controller: 'TaskController'
     }).when('/environmentvariables', {
         templateUrl: 'views/environmentvariables.html',
         controller: 'EnvironmentVariableController'
@@ -52,12 +53,26 @@ app.directive('ngReallyClick', [function() {
 }]);
 
 app.controller('TaskController', function ($scope, $http, $location, $route) {
-    if($location.$$path == "/tasks") {
+    if ($location.$$path == "/tasks") {
         $http.get('/v1/tasks').success(function (data) {
+            $scope.tasks = data;
+        }).error(function (data, status) {
+           console.log('Error ' + data)
+        });
+    } else if($location.$$path == "/scheduledtasks") {
+        $http.get('/v1/scheduledtasks').success(function (data) {
             $scope.tasks = data;
         }).error(function (data, status) {
             console.log('Error ' + data)
         });
+    } else if($location.$$path == "/tasks/create") {
+        $scope.task = {
+            type: 'TASK'
+        };
+    } else if($location.$$path == "/scheduledtasks/create") {
+        $scope.task = {
+            type: 'SCHEDULED_TASK'
+        };
     }
 
     $scope.createTask = function () {
@@ -77,37 +92,6 @@ app.controller('TaskController', function ($scope, $http, $location, $route) {
     }
 });
 
-app.controller('ScheduledTaskController', function ($scope, $http, $location, $route) {
-    if($location.$$path == "/scheduledtasks") {
-        $http.get('/v1/scheduledtasks').success(function (data) {
-            $scope.scheduledtasks = data;
-        }).error(function (data, status) {
-            console.log('Error ' + data)
-        });
-    }
-
-    $scope.scheduledtask = {
-      task: {
-        type: 1
-      }
-    };
-
-    $scope.createScheduledTask = function () {
-        $http.post('/v1/scheduledtasks', $scope.scheduledtask).success(function (data) {
-            $location.path('/scheduledtasks');
-        }).error(function (data, status) {
-            console.log('Error ' + data)
-        })
-    }
-
-    $scope.deleteScheduledTask = function (scheduledTask) {
-        $http.delete('/v1/scheduledtasks/' + scheduledTask.id).success(function (data) {
-            $route.reload();
-        }).error(function (data, status) {
-            console.log('Error ' + data)
-        })
-    }
-});
 
 app.controller('EnvironmentVariableController', function ($scope, $http, $q, $filter) {
 

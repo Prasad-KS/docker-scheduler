@@ -17,9 +17,15 @@ public class TaskHandler {
     @Inject
     private TaskService taskService;
 
-    public RequestHandlerWrapper<EmptyPayload> list() {
+    public RequestHandlerWrapper<EmptyPayload> listTasks() {
         return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
-            return new Answer(200,taskService.list());
+            return new Answer(200,taskService.listTasks());
+        });
+    }
+
+    public RequestHandlerWrapper<EmptyPayload> listScheduledTasks() {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+            return new Answer(200,taskService.listScheduledTasks());
         });
     }
 
