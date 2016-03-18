@@ -1,36 +1,29 @@
-<h2>Tasks <a class="btn btn-primary pull-right" href="#/scheduledtasks/create"><i
+<h2>Tasks <a class="btn btn-primary pull-right" ui-sref="createscheduledtask"><i
         class="icon-plus-sign icon-white"></i>New Scheduled Task</a></h2>
 
 <table class="table table-hover">
     <tr>
-        <th rowspan="2">
+        <th>
             #
         </th>
-        <th rowspan="2">
+        <th>
             Name
         </th>
-        <th rowspan="2">
+        <th>
             Created On
         </th>
-        <th rowspan="2">
+        <th>
             Image
         </th>
-        <th rowspan="2">
+        <th>
             Command
         </th>
-        <th rowspan="2">
+        <th>
             Schedule
         </th>
-        <th colspan="2">
-            Executions in last 24 hours
+        <th>
+            Actions
         </th>
-        <th rowspan="2">
-            Delete
-        </th>
-    </tr>
-    <tr>
-        <th>Suceeded</th>
-        <th>Failed</th>
     </tr>
 
     <tr ng-repeat="task in tasks">
@@ -51,14 +44,12 @@
             {{task.cron}}
         </td>
         <td>
-            {{task.success}}
-        </td>
-        <td>
-            {{task.failed}}
-        </td>
-        <td>
+            <button type="button" ui-sref="executions({taskId: {{task.id}}})"
+                    class="btn btn-info">
+                View Executions
+            </button>
             <button type="button" ng-really-message="Are you sure?" ng-really-click="deleteTask({{task}})"
-                    class="btn btn-danger pull-right">
+                    class="btn btn-danger">
                 Delete
             </button>
         </td>

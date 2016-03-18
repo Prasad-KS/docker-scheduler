@@ -36,6 +36,38 @@ public class Execution {
         this.endedOn = endedOn;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public String getStdout() {
+        return stdout;
+    }
+
+    public String getStderr() {
+        return stderr;
+    }
+
+    public Map<String, String> getEnvironmentVariables() {
+        return environmentVariables;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Date getStartedOn() {
+        return startedOn;
+    }
+
+    public Date getEndedOn() {
+        return endedOn;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

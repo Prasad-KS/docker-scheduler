@@ -1,9 +1,12 @@
 package org.paggarwal.dockerscheduler.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
+import org.iq80.snappy.Snappy;
+import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.impl.DSL;
+import org.jooq.tools.StringUtils;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.models.Task;
 import org.paggarwal.dockerscheduler.service.ExecutionService;
@@ -11,9 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.paggarwal.dockerscheduler.generated.tables.Executions.EXECUTIONS;
 import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
@@ -28,7 +32,7 @@ public class ExecutionServiceImpl implements ExecutionService {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Inject
-    private DSL dsl;
+    private DSLContext dsl;
 
     @Transactional(readOnly = true)
     @Override
@@ -37,6 +41,7 @@ public class ExecutionServiceImpl implements ExecutionService {
             return dsl.selectFrom(EXECUTIONS.join(TASKS)
                     .on(TASKS.ID.equal(EXECUTIONS.TASK_ID)))
                     .where(EXECUTIONS.TASK_ID.equal(taskId))
+                    .orderBy(EXECUTIONS.STARTED_ON.desc())
                     .fetch(this::mapRecord);
         } catch (Exception e) {
             throw Throwables.propagate(e);
@@ -52,25 +57,35 @@ public class ExecutionServiceImpl implements ExecutionService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer create(Execution execution) {
-        return null;
+        String envVars = execution.getEnvironmentVariables().entrySet().stream()
+                .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("\n"));
+        return dsl.insertInto(EXECUTIONS)
+                .columns(EXECUTIONS.TASK_ID, EXECUTIONS.STATUS, EXECUTIONS.ENVIRONMENT_VARIABLES)
+                .values((int) execution.getTask().getId(), execution.getStatus().ordinal(),envVars)
+                .returning(EXECUTIONS.ID).fetchOne().getId();
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean update(Execution execution) {
-        return false;
+        return dsl.update(EXECUTIONS)
+                .set(EXECUTIONS.STATUS, execution.getStatus().ordinal())
+                .set(EXECUTIONS.STDOUT, Snappy.compress(execution.getStdout().getBytes(Charsets.UTF_8)))
+                .set(EXECUTIONS.STDERR, Snappy.compress(execution.getStderr().getBytes(Charsets.UTF_8)))
+                .set(EXECUTIONS.ENDED_ON, new Timestamp(execution.getEndedOn().getTime()))
+                .where(EXECUTIONS.ID.equal((int)execution.getId()))
+                .execute() > 0;
     }
 
     private Execution mapRecord(Record record) {
         try {
-            return anExecution()
+            Execution.Builder builder = anExecution()
                     .withId(record.getValue(EXECUTIONS.ID))
                     .withEndedOn(record.getValue(EXECUTIONS.ENDED_ON))
                     .withStartedOn(record.getValue(EXECUTIONS.STARTED_ON))
-                    .withStderr(record.getValue(EXECUTIONS.STDERR))
-                    .withStdout(record.getValue(EXECUTIONS.STDOUT))
+                    .withStderr(new String(Snappy.uncompress(record.getValue(EXECUTIONS.STDERR),0,record.getValue(EXECUTIONS.STDERR).length),Charsets.UTF_8))
+                    .withStdout(new String(Snappy.uncompress(record.getValue(EXECUTIONS.STDOUT),0,record.getValue(EXECUTIONS.STDOUT).length),Charsets.UTF_8))
                     .withStatus(Execution.Status.values()[record.getValue(EXECUTIONS.STATUS)])
-                    .withEnvironmentVariables(OBJECT_MAPPER.readValue(record.getValue(EXECUTIONS.ENVIRONMENT_VARIABLES), Map.class))
                     .withTask(aTask()
                             .withId(record.getValue(TASKS.ID))
                             .withImage(record.getValue(TASKS.IMAGE))
@@ -81,8 +96,12 @@ public class ExecutionServiceImpl implements ExecutionService {
                             .withSuccess(record.getValue(TASKS.SUCCESS))
                             .withFailed(record.getValue(TASKS.FAILED))
                             .withType(Task.Type.values()[record.getValue(TASKS.TYPE)])
-                            .build())
-                    .build();
+                            .build());
+            if(!StringUtils.isBlank(record.getValue(EXECUTIONS.ENVIRONMENT_VARIABLES))) {
+                builder.withEnvironmentVariables(OBJECT_MAPPER.readValue(record.getValue(EXECUTIONS.ENVIRONMENT_VARIABLES), Map.class));
+            }
+
+            return builder.build();
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }

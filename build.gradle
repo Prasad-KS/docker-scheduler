@@ -58,6 +58,7 @@ dependencies {
 
     compile 'org.springframework:spring-aop:4.2.5.RELEASE'
 
+    compile 'org.iq80.snappy:snappy:0.4'
 
     compile 'org.quartz-scheduler:quartz:2.2.2'
     compile 'org.quartz-scheduler:quartz-jobs:2.2.2'

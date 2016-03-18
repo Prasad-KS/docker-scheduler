@@ -21,15 +21,15 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li ng-class="{ active: isActive('/tasks')}"><a href="/#/tasks">Tasks</a></li>
-                <li ng-class="{ active: isActive('/scheduledtasks')}"><a href="/#/scheduledtasks">Scheduled Tasks</a></li>
-                <li ng-class="{ active: isActive('/environmentvariables')}"><a href="/#/environmentvariables">Environment Variables</a></li>
+                <li ng-class="{ active: isActive('/tasks')}"><a ui-sref="tasks">Tasks</a></li>
+                <li ng-class="{ active: isActive('/scheduledtasks')}"><a ui-sref="scheduledtasks">Scheduled Tasks</a></li>
+                <li ng-class="{ active: isActive('/environmentvariables')}"><a ui-sref="environmentvariables">Environment Variables</a></li>
             </ul>
         </div>
     </div>
 </div>
 
-<div class="container" ng-view="">
+<div class="container" ui-view="">
 
 
 </div>
@@ -43,6 +43,10 @@
 <script src="/js/ui.bootstrap.js"></script>
 <script src="/js/xeditable.js"></script>
 <script src="/js/angular-quartz-cron.js"></script>
+<script src="/js/angular-ui-router.js"></script>
+<script src="/js/ct-ui-router-extras.js"></script>
+<script src="/js/ngStorage.js"></script>
+<script src="/js/angularJsOAuth2.js"></script>
 
 <script src="/scripts/app.js"></script>
 </body>

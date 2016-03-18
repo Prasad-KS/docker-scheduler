@@ -29,6 +29,12 @@ public class TaskHandler {
         });
     }
 
+    public RequestHandlerWrapper<EmptyPayload> getTask() {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+            return new Answer(200,taskService.get(Integer.parseInt(urlParams.get(":id"))).orElse(null));
+        });
+    }
+
     public RequestHandlerWrapper<Task> create() {
         return new RequestHandlerWrapper<Task>(Task.TYPE_REFERENCE,(value, urlParams) -> {
             return new Answer(201,ImmutableMap.of("id",taskService.create(value)));

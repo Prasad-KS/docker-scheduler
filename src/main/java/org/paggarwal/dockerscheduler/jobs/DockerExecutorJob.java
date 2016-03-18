@@ -5,6 +5,8 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
+import com.google.common.base.Joiner;
+import org.iq80.snappy.Snappy;
 import org.paggarwal.dockerscheduler.models.EnvironmentVariable;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.models.Task;
@@ -27,6 +29,9 @@ import static org.paggarwal.dockerscheduler.models.Execution.Builder.anExecution
  * Created by paggarwal on 3/10/16.
  */
 public class DockerExecutorJob implements Job {
+    public static final String TASK_ID = "TASK_ID";
+    public static final String TASK_NAME_SEPARATOR = "_";
+
     @Inject
     private DockerClient dockerClient;
 
@@ -42,11 +47,10 @@ public class DockerExecutorJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LogHandler logHandler = new LogHandler();
-        int taskId = context.getMergedJobDataMap().getIntFromString("TASK_ID");
+        int taskId = context.getMergedJobDataMap().getIntFromString(TASK_ID);
 
-        System.out.println(taskId);
+
         Optional<Task> taskOpt = taskService.get(taskId);
-        System.out.println(taskOpt.isPresent());
 
         if(taskOpt.isPresent()) {
             List<EnvironmentVariable> environmentVariables = environmentVariableService.list();
@@ -60,38 +64,52 @@ public class DockerExecutorJob implements Job {
 
             String image = taskOpt.get().getImage();
             String command = taskOpt.get().getCommand();
-            String name = taskOpt.get().getName();
-            builder.withStatus(Execution.Status.FAILED);
+            String name = taskOpt.get().getName() + TASK_NAME_SEPARATOR + context.getFireInstanceId();
+            Execution.Status status = Execution.Status.FAILED;
+            String stdOut = "";
+            String stdError = "";
             try {
                 if(runDockerImage(image, command, name, environmentVariables, logHandler) == 0) {
-                    builder.withStatus(Execution.Status.SUCCEDED);
+                    status = Execution.Status.SUCCEDED;
                 }
+                stdError = logHandler.getStdErr();
             } catch (Exception e) {
-                //
+                stdError = e.getMessage() + "\n" + Joiner.on("\n").join(e.getStackTrace());
             }
-            builder.withEndedOn(new Date());
-            executionService.update(builder.build());
+            stdOut = logHandler.getStdOut();
+            executionService.update(builder
+                    .withEndedOn(new Date())
+                    .withStderr(stdError)
+                    .withStdout(stdOut)
+                    .withStatus(status)
+                    .build());
         }
     }
 
 
     private Integer runDockerImage(String image, String command, String name, List<EnvironmentVariable> environmentVariables, LogHandler logHandler) {
-        CreateContainerResponse response = null;
+        String containerId = null;
 
+        List<String> environmentVars = environmentVariables.stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList());
         try {
-            response = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVariables.stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList())).exec();
+            containerId = dockerClient.createContainerCmd(image).withCmd(command).withName(name + "").withEnv(environmentVars).exec().getId();
         } catch (NotFoundException e) {
             PullImageResultCallback callback = new PullImageResultCallback();
             dockerClient.pullImageCmd(image).exec(callback);
             callback.awaitSuccess();
-            response = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVariables.stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList())).exec();
+            containerId = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVars).exec().getId();
         }
-        dockerClient.startContainerCmd(response.getId()).exec();
-        dockerClient.logContainerCmd(response.getId()).withStdOut(true).withStdErr(true).withFollowStream(true).exec(logHandler);
+        dockerClient.startContainerCmd(containerId).exec();
+        dockerClient.logContainerCmd(containerId)
+                .withStdOut(true)
+                .withStdErr(true)
+                .withFollowStream(true)
+                .withTailAll()
+                .withTimestamps(true).exec(logHandler);
         WaitContainerResultCallback waitContainerResultCallback = new WaitContainerResultCallback();
-        dockerClient.waitContainerCmd(response.getId()).exec(waitContainerResultCallback);
+        dockerClient.waitContainerCmd(containerId).exec(waitContainerResultCallback);
 
-        dockerClient.removeContainerCmd(response.getId()).exec();
+        dockerClient.removeContainerCmd(containerId).withForce(true).exec();
         return waitContainerResultCallback.awaitStatusCode();
     }
 }

@@ -420,11 +420,11 @@
             <column name="task_id" type="INT">
                 <constraints nullable="false" references="TASKS(ID)" foreignKeyName="FK_TASKS_EXECUTIONS"/>
             </column>
-            <column name="stdout" type="VARCHAR(1024)">
-                <constraints nullable="false"/>
+            <column name="stdout" type="BLOB">
+                <constraints nullable="true"/>
             </column>
-            <column name="stderr" type="VARCHAR(1024)">
-                <constraints nullable="false"/>
+            <column name="stderr" type="BLOB">
+                <constraints nullable="true"/>
             </column>
             <column name="environment_variables" type="VARCHAR(1024)">
                 <constraints nullable="false"/>

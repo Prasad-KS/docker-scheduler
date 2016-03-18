@@ -4,6 +4,7 @@ import com.google.common.base.Throwables;
 import org.jooq.DSLContext;
 import org.paggarwal.dockerscheduler.generated.tables.records.TasksRecord;
 import org.paggarwal.dockerscheduler.jobs.DockerExecutorJob;
+import org.paggarwal.dockerscheduler.jobs.NonConcurrentDockerExecutorJob;
 import org.paggarwal.dockerscheduler.models.Task;
 import org.paggarwal.dockerscheduler.models.TaskGroup;
 import org.paggarwal.dockerscheduler.service.ExecutionService;
@@ -59,30 +60,23 @@ public class TaskServiceImpl implements TaskService {
                     .values(task.getName(), task.getImage(), task.getCommand(),
                             task.getCron(), task.getType().ordinal()).returning(TASKS.ID).fetchOne().getId();
 
-            TaskGroup taskGroup = TaskGroup.TASK;
-            if (task.getType() == Type.TASK) {
-                id = dsl.insertInto(TASKS).columns(TASKS.NAME
-                        , TASKS.IMAGE, TASKS.COMMAND).values(task.getName(), task.getImage(), task.getCommand()).returning(TASKS.ID).fetchOne().getId();
-            } else {
+            TaskGroup taskGroup = task.getType() == Type.SCHEDULED_TASK ? TaskGroup.SCHEDULED_TASK : TaskGroup.TASK;
 
-                taskGroup = TaskGroup.SCHEDULED_TASK;
-            }
-
-
-            JobBuilder jobDetailBuilder = JobBuilder.newJob(DockerExecutorJob.class)
+            JobBuilder jobBuilder = JobBuilder.newJob()
                     .usingJobData("TASK_ID", Integer.toString(id))
                     .requestRecovery()
-                    .storeDurably();
+                    .storeDurably()
+                    .withIdentity(Integer.toString(id), taskGroup.name());
 
             if (task.getType() == Type.SCHEDULED_TASK) {
-                JobDetail jobDetail = jobDetailBuilder.withIdentity(Integer.toString(id), taskGroup.name()).build();
+                jobBuilder.ofType(NonConcurrentDockerExecutorJob.class);
                 CronTriggerImpl trigger = new CronTriggerImpl();
                 trigger.setCronExpression(task.getCron());
                 trigger.setKey(TriggerKey.triggerKey(Integer.toString(id), TaskGroup.SCHEDULED_TASK.toString()));
-                scheduler.scheduleJob(jobDetail, trigger);
+                scheduler.scheduleJob(jobBuilder.build(), trigger);
             } else {
-                JobDetail jobDetail = jobDetailBuilder.withIdentity(Integer.toString(id), taskGroup.name()).build();
-                scheduler.addJob(jobDetail, true);
+                jobBuilder.ofType(DockerExecutorJob.class);
+                scheduler.addJob(jobBuilder.build(), true);
             }
 
             return id;

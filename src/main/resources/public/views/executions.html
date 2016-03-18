@@ -1,0 +1,98 @@
+<h2>{{task.name}}</h2>
+
+<table class="table table-hover">
+    <tr>
+        <th>
+            Created On
+        </th>
+        <td>
+            {{task.createdOn |date:'medium'}}
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Image
+        </th>
+        <td>
+            {{task.image}}
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Command
+        </th>
+        <td>
+            {{task.command}}
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Schedule
+        </th>
+        <td>
+            {{task.cron}}
+        </td>
+    </tr>
+</table>
+
+<h3>Executions</h3>
+<table class="table">
+    <tr>
+        <th>
+            Actions
+        </th>
+        <th>
+            #
+        </th>
+        <th>
+            Status
+        </th>
+        <th>
+            Started On
+        </th>
+        <th>
+            Ended On
+        </th>
+    </tr>
+    <tr ng-repeat-start="execution in executions">
+        <td>
+            <button ng-if="execution.expanded" ng-click="execution.expanded = false">-</button>
+            <button ng-if="!execution.expanded" ng-click="execution.expanded = true">+</button>
+        </td>
+        <td>
+            {{execution.id}}
+        </td>
+        <td>
+            {{execution.status}}
+        </td>
+        <td>
+            {{execution.startedOn | date:'medium'}}
+        </td>
+        <td>
+            {{execution.endedOn | date:'medium'}}
+        </td>
+    </tr>
+    <tr ng-if="execution.expanded" ng-repeat-end="">
+        <td colspan="5">
+            <div>
+                <h4>Environment Variables</h4>
+                <p class="well">
+                    {{execution.environmentVariables}}
+                </p>
+            </div>
+            <div>
+                <h4>STDOUT</h4>
+                <p class="well">
+                    {{execution.stdout}}
+                </p>
+            </div>
+            <div>
+                <h4>STDERR</h4>
+                <p class="well">
+                    {{execution.stderr}}
+                </p>
+            </div>
+        </td>
+    </tr>
+
+</table>

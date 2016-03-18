@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/docker-scheduler.iml" filepath="$PROJECT_DIR$/docker-scheduler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker-scheduler.iml" filepath="$PROJECT_DIR$/.idea/modules/docker-scheduler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker-scheduler_main.iml" filepath="$PROJECT_DIR$/.idea/modules/docker-scheduler_main.iml" group="docker-scheduler" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker-scheduler_test.iml" filepath="$PROJECT_DIR$/.idea/modules/docker-scheduler_test.iml" group="docker-scheduler" />
     </modules>
   </component>
 </project>

@@ -9,34 +9,40 @@ var app = angular.module('dockerscheduler', [
     'ngRoute',
     'ui.bootstrap',
     'xeditable',
-    'angular-quartz-cron'
+    'angular-quartz-cron',
+    'ui.router',
+    'ct.ui.router.extras',
+    'ngStorage'
 ]);
 
-app.config(function ($routeProvider) {
-    $routeProvider.when('/', {
-        redirectTo: '/tasks'
-    }).when('/tasks', {
-        templateUrl: 'views/tasks.html',
+app.config(['$stateProvider', '$urlRouterProvider','$locationProvider',function($stateProvider, $urlRouterProvider,$locationProvider) {
+    $urlRouterProvider.otherwise('/tasks');
+    $stateProvider.state('tasks',{
+        url: '/tasks',
+        templateUrl: '/views/tasks.html',
         controller: 'TaskController'
-    }).when('/tasks/create', {
-        templateUrl: 'views/createtask.html',
+    }).state('createtask',{
+        url: '/tasks/create',
+        templateUrl: '/views/createtask.html',
         controller: 'TaskController'
-    }).when('/scheduledtasks', {
-        templateUrl: 'views/scheduledtasks.html',
+    }).state('scheduledtasks',{
+        url: '/scheduledtasks',
+        templateUrl: '/views/scheduledtasks.html',
         controller: 'TaskController'
-    }).when('/scheduledtasks/create', {
-        templateUrl: 'views/createscheduledtask.html',
+    }).state('createscheduledtask',{
+        url: '/scheduledtasks/create',
+        templateUrl: '/views/createscheduledtask.html',
         controller: 'TaskController'
-    }).when('/environmentvariables', {
-        templateUrl: 'views/environmentvariables.html',
+    }).state('environmentvariables',{
+        url: '/environmentvariables',
+        templateUrl: '/views/environmentvariables.html',
         controller: 'EnvironmentVariableController'
-    }).when('/environmentvariables/create', {
-        templateUrl: 'views/environmentvariablescreate.html',
-        controller: 'EnvironmentVariableController'
-    }).otherwise({
-        redirectTo: '/tasks'
-    })
-});
+    }).state('executions',{
+        url: '/tasks/:taskId/executions',
+        templateUrl: '/views/executions.html',
+        controller: 'ExecutionController'
+    });
+}]);
 
 app.directive('ngReallyClick', [function() {
     return {
@@ -52,7 +58,7 @@ app.directive('ngReallyClick', [function() {
     }
 }]);
 
-app.controller('TaskController', function ($scope, $http, $location, $route) {
+app.controller('TaskController', function ($scope, $window, $http, $location, $state, $previousState) {
     if ($location.$$path == "/tasks") {
         $http.get('/v1/tasks').success(function (data) {
             $scope.tasks = data;
@@ -73,11 +79,21 @@ app.controller('TaskController', function ($scope, $http, $location, $route) {
         $scope.task = {
             type: 'SCHEDULED_TASK'
         };
+        $scope.cronConfig = {
+            options: {
+                allowMonth : false,
+                allowYear : false
+            }
+        };
     }
+
+
+
+
 
     $scope.createTask = function () {
         $http.post('/v1/tasks', $scope.task).success(function (data) {
-            $location.path('/tasks');
+            $previousState.go();
         }).error(function (data, status) {
             console.log('Error ' + data)
         })
@@ -85,7 +101,7 @@ app.controller('TaskController', function ($scope, $http, $location, $route) {
 
     $scope.deleteTask = function (task) {
         $http.delete('/v1/tasks/' + task.id).success(function (data) {
-            $route.reload();
+            $state.reload();
         }).error(function (data, status) {
             console.log('Error ' + data)
         })
@@ -175,6 +191,22 @@ app.controller('EnvironmentVariableController', function ($scope, $http, $q, $fi
          }
          return $q.all(results);
      }
+});
+
+app.controller('ExecutionController', function ($scope, $http, $location, $stateParams) {
+    var taskId = $stateParams.taskId; //getting fooVal
+
+    $http.get('/v1/tasks/' + taskId + '/executions').success(function (data) {
+        $scope.executions = data;
+    }).error(function (data, status) {
+        console.log('Error ' + data)
+    });
+
+    $http.get('/v1/tasks/' + taskId).success(function (data) {
+        $scope.task = data;
+    }).error(function (data, status) {
+        console.log('Error ' + data)
+    });
 });
 
 app.controller('HeaderController', function ($scope, $http, $location) {
