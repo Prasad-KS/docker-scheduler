@@ -3,6 +3,7 @@ package org.paggarwal.dockerscheduler;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -14,10 +15,10 @@ public class Answer {
     private final Map<String,String> headers;
 
     public Answer(int code) {
-        this(code, null, null);
+        this(code, null, Collections.emptyMap());
     }
     public Answer(int code, Object body){
-        this(code, body, null);
+        this(code, body, Collections.emptyMap());
     }
     public Answer(int code, Object body, Map<String,String> headers){
         this.code = code;

@@ -18,31 +18,31 @@ public class TaskHandler {
     private TaskService taskService;
 
     public RequestHandlerWrapper<EmptyPayload> listTasks() {
-        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(200,taskService.listTasks());
         });
     }
 
     public RequestHandlerWrapper<EmptyPayload> listScheduledTasks() {
-        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(200,taskService.listScheduledTasks());
         });
     }
 
     public RequestHandlerWrapper<EmptyPayload> getTask() {
-        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(200,taskService.get(Integer.parseInt(urlParams.get(":id"))).orElse(null));
         });
     }
 
     public RequestHandlerWrapper<Task> create() {
-        return new RequestHandlerWrapper<Task>(Task.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<Task>(Task.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(201,ImmutableMap.of("id",taskService.create(value)));
         });
     }
 
     public RequestHandlerWrapper<EmptyPayload> delete() {
-        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(200,ImmutableMap.of("status", taskService.delete((int) Integer.parseInt(urlParams.get(":id")))));
         });
     }

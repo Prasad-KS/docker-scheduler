@@ -7,6 +7,7 @@ import org.iq80.snappy.Snappy;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.tools.StringUtils;
+import org.paggarwal.dockerscheduler.Range;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.models.Task;
 import org.paggarwal.dockerscheduler.service.ExecutionService;
@@ -36,12 +37,27 @@ public class ExecutionServiceImpl implements ExecutionService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Execution> list(int taskId) {
+    public int count(int taskId) {
+        try {
+            return dsl.selectCount().from(EXECUTIONS.join(TASKS)
+                    .on(TASKS.ID.equal(EXECUTIONS.TASK_ID)))
+                    .where(EXECUTIONS.TASK_ID.equal(taskId))
+                    .fetchOne().value1();
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Execution> list(int taskId, Range range) {
         try {
             return dsl.selectFrom(EXECUTIONS.join(TASKS)
                     .on(TASKS.ID.equal(EXECUTIONS.TASK_ID)))
                     .where(EXECUTIONS.TASK_ID.equal(taskId))
                     .orderBy(EXECUTIONS.STARTED_ON.desc())
+                    .limit(range.getEnd() - range.getStart() + 1)
+                    .offset(range.getStart())
                     .fetch(this::mapRecord);
         } catch (Exception e) {
             throw Throwables.propagate(e);

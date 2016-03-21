@@ -20,25 +20,25 @@ public class EnvironmentVariableHandler {
     private EnvironmentVariableService environmentVariableService;
 
     public RequestHandlerWrapper<EmptyPayload> list() {
-        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE, (value, urlParams) -> {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE, (value, urlParams, headers) -> {
             return new Answer(200, environmentVariableService.list());
         });
     }
 
     public RequestHandlerWrapper<ValidableList<EnvironmentVariable>> create() {
-        return new RequestHandlerWrapper<ValidableList<EnvironmentVariable>>(new TypeReference<ValidableList<EnvironmentVariable>>(){},(value, urlParams) -> {
+        return new RequestHandlerWrapper<ValidableList<EnvironmentVariable>>(new TypeReference<ValidableList<EnvironmentVariable>>(){},(value, urlParams, headers) -> {
             return new Answer(201,ImmutableMap.of("status",environmentVariableService.create(value)));
         });
     }
 
     public RequestHandlerWrapper<EnvironmentVariable> update() {
-        return new RequestHandlerWrapper<EnvironmentVariable>(EnvironmentVariable.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<EnvironmentVariable>(EnvironmentVariable.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(201,ImmutableMap.of("status",environmentVariableService.update(value)));
         });
     }
 
     public RequestHandlerWrapper<EmptyPayload> delete() {
-        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams) -> {
+        return new RequestHandlerWrapper<EmptyPayload>(EmptyPayload.TYPE_REFERENCE,(value, urlParams, headers) -> {
             return new Answer(200,ImmutableMap.of("status", environmentVariableService.delete((int) Integer.parseInt(urlParams.get(":id")))));
         });
     }
