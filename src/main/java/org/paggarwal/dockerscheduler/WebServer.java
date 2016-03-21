@@ -1,5 +1,6 @@
 package org.paggarwal.dockerscheduler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.CharStreams;
 import org.paggarwal.dockerscheduler.handlers.EnvironmentVariableHandler;
 import org.paggarwal.dockerscheduler.handlers.ExecutionHandler;
@@ -16,6 +17,9 @@ import static spark.Spark.*;
  */
 @Component
 public class WebServer {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     @Inject
     private TaskHandler taskHandler;
 
@@ -34,6 +38,11 @@ public class WebServer {
     private void setupRoutes() {
         // MainApp
         get("/", (request, response) -> CharStreams.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("public/index.html"))));
+        post("/auth/github",(request, response) -> {
+            response.type("application/json");
+            response.status(200);
+            return "";
+        });
 
         // Tasks
         get("/v1/tasks",taskHandler.listTasks());

@@ -12,36 +12,92 @@ var app = angular.module('dockerscheduler', [
     'angular-quartz-cron',
     'ui.router',
     'ct.ui.router.extras',
-    'ngStorage'
+    'satellizer',
+    'bgf.paginateAnything'
 ]);
 
-app.config(['$stateProvider', '$urlRouterProvider','$locationProvider',function($stateProvider, $urlRouterProvider,$locationProvider) {
+app.config(['$stateProvider', '$urlRouterProvider','$locationProvider','$authProvider',function($stateProvider, $urlRouterProvider,$locationProvider,$authProvider) {
     $urlRouterProvider.otherwise('/tasks');
     $stateProvider.state('tasks',{
         url: '/tasks',
         templateUrl: '/views/tasks.html',
-        controller: 'TaskController'
+        controller: 'TaskController',
+        resolve: {
+            loginRequired: loginRequired
+        }
     }).state('createtask',{
         url: '/tasks/create',
         templateUrl: '/views/createtask.html',
-        controller: 'TaskController'
+        controller: 'TaskController',
+        resolve: {
+            loginRequired: loginRequired
+        }
     }).state('scheduledtasks',{
         url: '/scheduledtasks',
         templateUrl: '/views/scheduledtasks.html',
-        controller: 'TaskController'
+        controller: 'TaskController',
+        resolve: {
+            loginRequired: loginRequired
+        }
     }).state('createscheduledtask',{
         url: '/scheduledtasks/create',
         templateUrl: '/views/createscheduledtask.html',
-        controller: 'TaskController'
+        controller: 'TaskController',
+        resolve: {
+            loginRequired: loginRequired
+        }
     }).state('environmentvariables',{
         url: '/environmentvariables',
         templateUrl: '/views/environmentvariables.html',
-        controller: 'EnvironmentVariableController'
+        controller: 'EnvironmentVariableController',
+        resolve: {
+            loginRequired: loginRequired
+        }
     }).state('executions',{
         url: '/tasks/:taskId/executions',
         templateUrl: '/views/executions.html',
-        controller: 'ExecutionController'
+        controller: 'ExecutionController',
+        resolve: {
+            loginRequired: loginRequired
+        }
+    }).state('login', {
+        url: '/login',
+        templateUrl: '/views/login.html',
+        controller: 'LoginCtrl',
+        resolve: {
+            skipIfLoggedIn: skipIfLoggedIn
+        }
+    }).state('logout', {
+        url: '/logout',
+        template: null,
+        controller: 'LogoutCtrl'
     });
+
+    $authProvider.github({
+        clientId: 'e526d58f157cb7cf5d4a',
+        scope: ['user:email','read:org']
+    });
+
+    function skipIfLoggedIn($q, $auth) {
+        var deferred = $q.defer();
+        if ($auth.isAuthenticated()) {
+            deferred.reject();
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+    }
+
+    function loginRequired($q, $location, $auth) {
+        var deferred = $q.defer();
+        deferred.resolve();
+        /*if ($auth.isAuthenticated()) {
+            deferred.resolve();
+        } else {
+            $location.path('/login');
+        }*/
+        return deferred.promise;
+    }
 }]);
 
 app.directive('ngReallyClick', [function() {
@@ -195,11 +251,19 @@ app.controller('EnvironmentVariableController', function ($scope, $http, $q, $fi
 
 app.controller('ExecutionController', function ($scope, $http, $location, $stateParams) {
     var taskId = $stateParams.taskId; //getting fooVal
+    $scope.taskId = taskId;
 
-    $http.get('/v1/tasks/' + taskId + '/executions').success(function (data) {
-        $scope.executions = data;
-    }).error(function (data, status) {
-        console.log('Error ' + data)
+    $scope.perPage = parseInt($location.search().perPage, 10) || 10;
+    $scope.page = parseInt($location.search().page, 10) || 0;
+    $scope.clientLimit = 20;
+    $scope.url = '/v1/tasks/' + taskId + '/executions';
+
+    $scope.$watch('page', function(page) { $location.search('page', page); });
+    $scope.$watch('perPage', function(page) { $location.search('perPage', page); });
+    $scope.$on('$locationChangeSuccess', function() {
+        var page = +$location.search().page,perPage = +$location.search().perPage;
+        if(page >= 0) { $scope.page = page; };
+        if(perPage >= 0) { $scope.perPage = perPage; };
     });
 
     $http.get('/v1/tasks/' + taskId).success(function (data) {
@@ -213,6 +277,36 @@ app.controller('HeaderController', function ($scope, $http, $location) {
     $scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
+});
+
+app.controller('LoginCtrl', function($scope, $location, $auth) {
+    $scope.authenticate = function(provider) {
+        $auth.authenticate(provider).then(function(response) {
+            //console.log(response);
+            console.log($auth.isAuthenticated());
+            $location.path('/');
+        }).catch(function(error) {
+            if (error.error) {
+                // Popup error - invalid redirect_uri, pressed cancel button, etc.
+                console.log(error.error);
+            } else if (error.data) {
+                // HTTP response error from server
+                console.log(error.data.message, error.status);
+            } else {
+                console.log(error);
+            }
+        });
+    };
+});
+
+app.controller('LogoutCtrl', function($location, $auth, toastr) {
+    if (!$auth.isAuthenticated()) {
+        return;
+    }
+    $auth.logout().then(function() {
+        toastr.info('You have been logged out');
+        $location.path('/');
+    });
 });
 
 function generateUUID(){
