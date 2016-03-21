@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.paggarwal.dockerscheduler.generated.tables.EnvironmentVariables.ENVIRONMENT_VARIABLES;
+import static org.paggarwal.dockerscheduler.db.tables.EnvironmentVariables.ENVIRONMENT_VARIABLES;
 
 /**
  * Created by paggarwal on 3/2/16.

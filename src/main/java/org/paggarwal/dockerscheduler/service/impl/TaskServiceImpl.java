@@ -2,14 +2,17 @@ package org.paggarwal.dockerscheduler.service.impl;
 
 import com.google.common.base.Throwables;
 import org.jooq.DSLContext;
-import org.paggarwal.dockerscheduler.generated.tables.records.TasksRecord;
+import org.paggarwal.dockerscheduler.db.tables.records.TasksRecord;
 import org.paggarwal.dockerscheduler.jobs.DockerExecutorJob;
 import org.paggarwal.dockerscheduler.jobs.NonConcurrentDockerExecutorJob;
 import org.paggarwal.dockerscheduler.models.Task;
 import org.paggarwal.dockerscheduler.models.TaskGroup;
 import org.paggarwal.dockerscheduler.service.ExecutionService;
 import org.paggarwal.dockerscheduler.service.TaskService;
-import org.quartz.*;
+import org.quartz.JobBuilder;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.TriggerKey;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
-import static org.paggarwal.dockerscheduler.models.Task.*;
+import static org.paggarwal.dockerscheduler.db.tables.Tasks.TASKS;
+import static org.paggarwal.dockerscheduler.models.Task.Builder;
+import static org.paggarwal.dockerscheduler.models.Task.Type;
 
 /**
  * Created by paggarwal on 3/2/16.

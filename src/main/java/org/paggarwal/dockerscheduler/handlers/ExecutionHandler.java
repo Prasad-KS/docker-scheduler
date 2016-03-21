@@ -2,7 +2,7 @@ package org.paggarwal.dockerscheduler.handlers;
 
 import com.google.common.collect.ImmutableMap;
 import org.paggarwal.dockerscheduler.Answer;
-import org.paggarwal.dockerscheduler.Range;
+import org.paggarwal.dockerscheduler.models.Range;
 import org.paggarwal.dockerscheduler.RequestHandlerWrapper;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.service.ExecutionService;

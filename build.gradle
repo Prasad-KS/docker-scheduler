@@ -42,6 +42,7 @@ dependencies {
 
     compile 'com.sparkjava:spark-core:2.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.4'
+    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.11'
 
     compile 'mysql:mysql-connector-java:5.1.38'
     compile 'org.jooq:jooq:3.7.2'
@@ -64,6 +65,10 @@ dependencies {
     compile 'org.quartz-scheduler:quartz-jobs:2.2.2'
 
     compile 'com.github.docker-java:docker-java:3.0.0-RC3'
+
+    compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+
+    compile 'com.auth0:java-jwt:2.1.0'
 
     // mandatory dependencies for using Spock
     compile "org.codehaus.groovy:groovy-all:2.4.1"
@@ -111,8 +116,8 @@ jooq {
                 excludes = "DATABASECHANGELOG|DATABASECHANGELOGLOCK"
             }
             target {
-                packageName = 'org.paggarwal.dockerscheduler.generated'
-                directory = "${projectDir}/src/main/generated"
+                packageName = 'org.paggarwal.dockerscheduler.db'
+                directory = "${projectDir}/src/main/java"
             }
         }
     }

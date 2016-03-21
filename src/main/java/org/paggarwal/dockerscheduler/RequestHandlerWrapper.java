@@ -6,17 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Splitter;
 import org.paggarwal.dockerscheduler.handlers.EmptyPayload;
+import org.paggarwal.dockerscheduler.models.Range;
 import org.paggarwal.dockerscheduler.util.TriFunction;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +30,10 @@ public class RequestHandlerWrapper<V extends Validable> implements RequestHandle
 
     static {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    public void setHandler(TriFunction<V, Map<String, String>, Map<String, String>, Answer> handler) {
+        this.handler = handler;
     }
 
     public RequestHandlerWrapper(TypeReference<V> valueClass, TriFunction<V,Map<String,String>,Map<String,String>,Answer> handler) {

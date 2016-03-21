@@ -2,6 +2,8 @@ package org.paggarwal.dockerscheduler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.CharStreams;
+import org.paggarwal.dockerscheduler.filters.AuthFilter;
+import org.paggarwal.dockerscheduler.handlers.AuthHandler;
 import org.paggarwal.dockerscheduler.handlers.EnvironmentVariableHandler;
 import org.paggarwal.dockerscheduler.handlers.ExecutionHandler;
 import org.paggarwal.dockerscheduler.handlers.TaskHandler;
@@ -29,6 +31,12 @@ public class WebServer {
     @Inject
     private ExecutionHandler executionHandler;
 
+    @Inject
+    private AuthHandler authHandler;
+
+    @Inject
+    private AuthFilter authFilter;
+
     public void run() {
         port(8080);
         staticFileLocation("/public");
@@ -38,11 +46,7 @@ public class WebServer {
     private void setupRoutes() {
         // MainApp
         get("/", (request, response) -> CharStreams.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("public/index.html"))));
-        post("/auth/github",(request, response) -> {
-            response.type("application/json");
-            response.status(200);
-            return "";
-        });
+        post("/auth/github",authHandler);
 
         // Tasks
         get("/v1/tasks",taskHandler.listTasks());
@@ -59,5 +63,7 @@ public class WebServer {
         post("/v1/environmentvariables",environmentVariableHandler.create());
         put("/v1/environmentvariables/:id",environmentVariableHandler.update());
         delete("/v1/environmentvariables/:id",environmentVariableHandler.delete());
+
+        before("/v1/*",authFilter);
     }
 }

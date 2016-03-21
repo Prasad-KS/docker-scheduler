@@ -20,10 +20,13 @@
             <a class="navbar-brand" href="/#/">Docker Scheduler</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
+            <ul ng-if="isAuthenticated()" class="nav navbar-nav">
                 <li ng-class="{ active: isActive('/tasks')}"><a ui-sref="tasks">Tasks</a></li>
                 <li ng-class="{ active: isActive('/scheduledtasks')}"><a ui-sref="scheduledtasks">Scheduled Tasks</a></li>
                 <li ng-class="{ active: isActive('/environmentvariables')}"><a ui-sref="environmentvariables">Environment Variables</a></li>
+            </ul>
+            <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
+                <li><a href="/#/logout">Logout</a></li>
             </ul>
         </div>
     </div>

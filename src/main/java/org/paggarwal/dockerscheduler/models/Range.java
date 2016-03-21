@@ -1,4 +1,4 @@
-package org.paggarwal.dockerscheduler;
+package org.paggarwal.dockerscheduler.models;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

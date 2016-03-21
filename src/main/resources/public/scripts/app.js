@@ -91,11 +91,11 @@ app.config(['$stateProvider', '$urlRouterProvider','$locationProvider','$authPro
     function loginRequired($q, $location, $auth) {
         var deferred = $q.defer();
         deferred.resolve();
-        /*if ($auth.isAuthenticated()) {
+        if ($auth.isAuthenticated()) {
             deferred.resolve();
         } else {
             $location.path('/login');
-        }*/
+        }
         return deferred.promise;
     }
 }]);
@@ -273,9 +273,13 @@ app.controller('ExecutionController', function ($scope, $http, $location, $state
     });
 });
 
-app.controller('HeaderController', function ($scope, $http, $location) {
+app.controller('HeaderController', function ($scope, $http, $location, $auth) {
     $scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
+    };
+
+    $scope.isAuthenticated = function() {
+        return $auth.isAuthenticated();
     };
 });
 
@@ -299,12 +303,12 @@ app.controller('LoginCtrl', function($scope, $location, $auth) {
     };
 });
 
-app.controller('LogoutCtrl', function($location, $auth, toastr) {
+app.controller('LogoutCtrl', function($location, $auth) {
     if (!$auth.isAuthenticated()) {
         return;
     }
     $auth.logout().then(function() {
-        toastr.info('You have been logged out');
+        console.log('You have been logged out');
         $location.path('/');
     });
 });

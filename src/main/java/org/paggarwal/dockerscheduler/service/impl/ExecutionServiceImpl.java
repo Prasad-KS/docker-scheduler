@@ -7,7 +7,7 @@ import org.iq80.snappy.Snappy;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.tools.StringUtils;
-import org.paggarwal.dockerscheduler.Range;
+import org.paggarwal.dockerscheduler.models.Range;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.models.Task;
 import org.paggarwal.dockerscheduler.service.ExecutionService;
@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.paggarwal.dockerscheduler.generated.tables.Executions.EXECUTIONS;
-import static org.paggarwal.dockerscheduler.generated.tables.Tasks.TASKS;
+import static org.paggarwal.dockerscheduler.db.tables.Executions.EXECUTIONS;
+import static org.paggarwal.dockerscheduler.db.tables.Tasks.TASKS;
 import static org.paggarwal.dockerscheduler.models.Execution.Builder.anExecution;
 import static org.paggarwal.dockerscheduler.models.Task.Builder.aTask;
 
