@@ -1,7 +1,9 @@
 package org.paggarwal.dockerscheduler.service.impl;
 
+import com.auth0.jwt.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 import org.jooq.DSLContext;
+import org.jooq.Record2;
 import org.paggarwal.dockerscheduler.db.tables.records.TasksRecord;
 import org.paggarwal.dockerscheduler.jobs.DockerExecutorJob;
 import org.paggarwal.dockerscheduler.jobs.NonConcurrentDockerExecutorJob;
@@ -9,15 +11,13 @@ import org.paggarwal.dockerscheduler.models.Task;
 import org.paggarwal.dockerscheduler.models.TaskGroup;
 import org.paggarwal.dockerscheduler.service.ExecutionService;
 import org.paggarwal.dockerscheduler.service.TaskService;
-import org.quartz.JobBuilder;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +31,13 @@ import static org.paggarwal.dockerscheduler.models.Task.Type;
  */
 @Service
 public class TaskServiceImpl implements TaskService {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Inject
     private DSLContext dsl;
 
     @Inject
+    @Named("taskScheduler")
     private Scheduler scheduler;
 
     @Inject
@@ -67,7 +70,7 @@ public class TaskServiceImpl implements TaskService {
             TaskGroup taskGroup = task.getType() == Type.SCHEDULED_TASK ? TaskGroup.SCHEDULED_TASK : TaskGroup.TASK;
 
             JobBuilder jobBuilder = JobBuilder.newJob()
-                    .usingJobData("TASK_ID", Integer.toString(id))
+                    .usingJobData(DockerExecutorJob.TASK_ID, Integer.toString(id))
                     .requestRecovery()
                     .storeDurably()
                     .withIdentity(Integer.toString(id), taskGroup.name());
@@ -102,6 +105,28 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public boolean execute(String taskName, List<String> payload) {
+        try {
+            boolean toReturn = false;
+            Optional<Record2<Integer, Integer>> tasksRecordOptional = Optional.ofNullable(dsl.select(TASKS.ID, TASKS.TYPE).from(TASKS).where(TASKS.NAME.equal(taskName)).fetchOne());
+
+            if(tasksRecordOptional.isPresent()) {
+                int id = tasksRecordOptional.get().getValue(TASKS.ID);
+                Type taskType = Type.values()[tasksRecordOptional.get().getValue(TASKS.TYPE)];
+                TaskGroup taskGroup = taskType == Type.SCHEDULED_TASK ? TaskGroup.SCHEDULED_TASK : TaskGroup.TASK;
+
+                JobDataMap jobData = new JobDataMap();
+                jobData.put(DockerExecutorJob.PAYLOAD, OBJECT_MAPPER.writeValueAsString(payload));
+                scheduler.triggerJob(JobKey.jobKey(Integer.toString(id), taskGroup.toString()), jobData);
+                toReturn = true;
+            }
+            return toReturn;
+        } catch(Exception e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     private Task mapRecord(TasksRecord record) {
         return Builder.aTask()
                 .withId(record.getId())
@@ -112,7 +137,7 @@ public class TaskServiceImpl implements TaskService {
                 .withCreatedOn(record.getCreatedOn())
                 .withSuccess(record.getSuccess())
                 .withFailed(record.getFailed())
-                .withType(Task.Type.values()[record.getType()])
+                .withType(Type.values()[record.getType()])
                 .build();
     }
 }

@@ -84,6 +84,7 @@ public class Keys {
 	public static final UniqueKey<QrtzSimpropTriggersRecord> KEY_QRTZ_SIMPROP_TRIGGERS_PRIMARY = UniqueKeys0.KEY_QRTZ_SIMPROP_TRIGGERS_PRIMARY;
 	public static final UniqueKey<QrtzTriggersRecord> KEY_QRTZ_TRIGGERS_PRIMARY = UniqueKeys0.KEY_QRTZ_TRIGGERS_PRIMARY;
 	public static final UniqueKey<TasksRecord> KEY_TASKS_PRIMARY = UniqueKeys0.KEY_TASKS_PRIMARY;
+	public static final UniqueKey<TasksRecord> KEY_TASKS_UK_TASKS_NAME = UniqueKeys0.KEY_TASKS_UK_TASKS_NAME;
 	public static final UniqueKey<UsersRecord> KEY_USERS_PRIMARY = UniqueKeys0.KEY_USERS_PRIMARY;
 
 	// -------------------------------------------------------------------------
@@ -123,6 +124,7 @@ public class Keys {
 		public static final UniqueKey<QrtzSimpropTriggersRecord> KEY_QRTZ_SIMPROP_TRIGGERS_PRIMARY = createUniqueKey(QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS, QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS.SCHED_NAME, QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS.TRIGGER_NAME, QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS.TRIGGER_GROUP);
 		public static final UniqueKey<QrtzTriggersRecord> KEY_QRTZ_TRIGGERS_PRIMARY = createUniqueKey(QrtzTriggers.QRTZ_TRIGGERS, QrtzTriggers.QRTZ_TRIGGERS.SCHED_NAME, QrtzTriggers.QRTZ_TRIGGERS.TRIGGER_NAME, QrtzTriggers.QRTZ_TRIGGERS.TRIGGER_GROUP);
 		public static final UniqueKey<TasksRecord> KEY_TASKS_PRIMARY = createUniqueKey(Tasks.TASKS, Tasks.TASKS.ID);
+		public static final UniqueKey<TasksRecord> KEY_TASKS_UK_TASKS_NAME = createUniqueKey(Tasks.TASKS, Tasks.TASKS.NAME);
 		public static final UniqueKey<UsersRecord> KEY_USERS_PRIMARY = createUniqueKey(Users.USERS, Users.USERS.ID);
 	}
 

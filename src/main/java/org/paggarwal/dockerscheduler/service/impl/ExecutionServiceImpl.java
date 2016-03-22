@@ -72,12 +72,18 @@ public class ExecutionServiceImpl implements ExecutionService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    public boolean deleteTasksOlderThan(long timeInMillis) {
+        return dsl.deleteFrom(EXECUTIONS).where(EXECUTIONS.ENDED_ON.le(new Timestamp(timeInMillis))).execute() > 0;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
     public Integer create(Execution execution) {
         String envVars = execution.getEnvironmentVariables().entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("\n"));
         return dsl.insertInto(EXECUTIONS)
-                .columns(EXECUTIONS.TASK_ID, EXECUTIONS.STATUS, EXECUTIONS.ENVIRONMENT_VARIABLES)
-                .values((int) execution.getTask().getId(), execution.getStatus().ordinal(),envVars)
+                .columns(EXECUTIONS.TASK_ID, EXECUTIONS.STATUS, EXECUTIONS.ENVIRONMENT_VARIABLES, EXECUTIONS.PAYLOAD)
+                .values((int) execution.getTask().getId(), execution.getStatus().ordinal(), envVars, execution.getPayload() == null ? null : Snappy.compress(execution.getPayload().getBytes(Charsets.UTF_8)))
                 .returning(EXECUTIONS.ID).fetchOne().getId();
     }
 
@@ -99,8 +105,9 @@ public class ExecutionServiceImpl implements ExecutionService {
                     .withId(record.getValue(EXECUTIONS.ID))
                     .withEndedOn(record.getValue(EXECUTIONS.ENDED_ON))
                     .withStartedOn(record.getValue(EXECUTIONS.STARTED_ON))
-                    .withStderr(new String(Snappy.uncompress(record.getValue(EXECUTIONS.STDERR),0,record.getValue(EXECUTIONS.STDERR).length),Charsets.UTF_8))
-                    .withStdout(new String(Snappy.uncompress(record.getValue(EXECUTIONS.STDOUT),0,record.getValue(EXECUTIONS.STDOUT).length),Charsets.UTF_8))
+                    .withStderr(record.getValue(EXECUTIONS.STDERR) == null ? null :new String(Snappy.uncompress(record.getValue(EXECUTIONS.STDERR),0,record.getValue(EXECUTIONS.STDERR).length),Charsets.UTF_8))
+                    .withStdout(record.getValue(EXECUTIONS.STDOUT) == null ? null : new String(Snappy.uncompress(record.getValue(EXECUTIONS.STDOUT),0,record.getValue(EXECUTIONS.STDOUT).length),Charsets.UTF_8))
+                    .withPayload(record.getValue(EXECUTIONS.PAYLOAD) == null ? null : new String(Snappy.uncompress(record.getValue(EXECUTIONS.PAYLOAD),0,record.getValue(EXECUTIONS.PAYLOAD).length),Charsets.UTF_8))
                     .withStatus(Execution.Status.values()[record.getValue(EXECUTIONS.STATUS)])
                     .withTask(aTask()
                             .withId(record.getValue(TASKS.ID))

@@ -26,7 +26,7 @@
                 <li ng-class="{ active: isActive('/environmentvariables')}"><a ui-sref="environmentvariables">Environment Variables</a></li>
             </ul>
             <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
-                <li><a href="/#/logout">Logout</a></li>
+                <li><a ui-sref="logout">Logout</a></li>
             </ul>
         </div>
     </div>

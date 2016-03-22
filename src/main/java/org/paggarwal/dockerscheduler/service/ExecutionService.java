@@ -17,6 +17,8 @@ public interface ExecutionService {
 
     boolean deleteForTask(int taskId);
 
+    boolean deleteTasksOlderThan(long timeInMillis);
+
     Integer create(Execution execution);
 
     boolean update(Execution execution);

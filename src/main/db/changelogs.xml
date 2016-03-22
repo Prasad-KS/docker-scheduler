@@ -457,4 +457,17 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="paggarwal" id="8">
+        <addColumn tableName="EXECUTIONS">
+            <column name="payload" type="BLOB">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="9" author="paggarwal">
+        <modifyDataType tableName="TASKS" columnName="name" newDataType="VARCHAR(128)"/>
+        <addUniqueConstraint tableName="TASKS" columnNames="name" constraintName="UK_TASKS_NAME" />
+    </changeSet>
 </databaseChangeLog>

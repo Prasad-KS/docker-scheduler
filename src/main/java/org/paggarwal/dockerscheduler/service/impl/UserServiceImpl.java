@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     @Inject
     private DSLContext dsl;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int create(User user) {
         return dsl.insertInto(USERS).columns(USERS.GITHUB_ID,USERS.NAME).values(user.getGithubId(),user.getName()).returning(USERS.ID).fetchOne().value1();

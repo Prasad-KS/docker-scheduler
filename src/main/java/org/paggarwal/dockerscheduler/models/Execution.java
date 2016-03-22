@@ -24,8 +24,9 @@ public class Execution {
     private Status status;
     private Date startedOn;
     private Date endedOn;
+    private String payload;
 
-    public Execution(long id, Task task, String stdout, String stderr, Map<String, String> environmentVariables, Status status, Date startedOn, Date endedOn) {
+    public Execution(long id, Task task, String stdout, String stderr, Map<String, String> environmentVariables, Status status, Date startedOn, Date endedOn, String payload) {
         this.id = id;
         this.task = task;
         this.stdout = stdout;
@@ -34,6 +35,7 @@ public class Execution {
         this.status = status;
         this.startedOn = startedOn;
         this.endedOn = endedOn;
+        this.payload = payload;
     }
 
     public long getId() {
@@ -68,24 +70,8 @@ public class Execution {
         return endedOn;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Execution)) return false;
-        Execution execution = (Execution) o;
-        return id == execution.id &&
-                Objects.equal(task, execution.task) &&
-                Objects.equal(stdout, execution.stdout) &&
-                Objects.equal(stderr, execution.stderr) &&
-                Objects.equal(environmentVariables, execution.environmentVariables) &&
-                status == execution.status &&
-                Objects.equal(startedOn, execution.startedOn) &&
-                Objects.equal(endedOn, execution.endedOn);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id, task, stdout, stderr, environmentVariables, status, startedOn, endedOn);
+    public String getPayload() {
+        return payload;
     }
 
     @Override
@@ -99,6 +85,7 @@ public class Execution {
                 .add("status", status)
                 .add("startedOn", startedOn)
                 .add("endedOn", endedOn)
+                .add("payload", payload)
                 .toString();
     }
 
@@ -112,6 +99,7 @@ public class Execution {
         private Status status;
         private Date startedOn;
         private Date endedOn;
+        private String payload;
 
         private Builder() {
         }
@@ -160,12 +148,17 @@ public class Execution {
             return this;
         }
 
+        public Builder withPayload(String payload) {
+            this.payload = payload;
+            return this;
+        }
+
         public Builder but() {
-            return anExecution().withId(id).withTask(task).withStdout(stdout).withStderr(stderr).withEnvironmentVariables(environmentVariables).withStatus(status).withStartedOn(startedOn).withEndedOn(endedOn);
+            return anExecution().withId(id).withTask(task).withStdout(stdout).withStderr(stderr).withEnvironmentVariables(environmentVariables).withStatus(status).withStartedOn(startedOn).withEndedOn(endedOn).withPayload(payload);
         }
 
         public Execution build() {
-            Execution execution = new Execution(id, task, stdout, stderr, environmentVariables, status, startedOn, endedOn);
+            Execution execution = new Execution(id, task, stdout, stderr, environmentVariables, status, startedOn, endedOn, payload);
             return execution;
         }
     }

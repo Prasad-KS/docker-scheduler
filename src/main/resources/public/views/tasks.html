@@ -3,31 +3,24 @@
 
 <table class="table table-hover">
     <tr>
-        <th rowspan="2">
+        <th>
             #
         </th>
-        <th rowspan="2">
+        <th>
             Name
         </th>
-        <th rowspan="2">
+        <th>
             Created On
         </th>
-        <th rowspan="2">
+        <th>
             Image
         </th>
-        <th rowspan="2">
+        <th>
             Command
         </th>
-        <th colspan="2">
-            Executions in last 24 hours
+        <th>
+            Actions
         </th>
-        <th rowspan="2">
-            Delete
-        </th>
-    </tr>
-    <tr>
-        <th>Suceeded</th>
-        <th>Failed</th>
     </tr>
 
     <tr ng-repeat="task in tasks">
@@ -45,14 +38,14 @@
             {{task.command}}
         </td>
         <td>
-            {{task.success}}
-        </td>
-        <td>
-            {{task.failed}}
-        </td>
-        <td>
+            <button type="button" ui-sref="executetask({taskName: '{{task.name}}', taskId: {{task.id}}})" class="btn btn-primary">
+                Execute
+            </button>
+            <button type="button" ui-sref="executions({taskId: {{task.id}}})" class="btn btn-primary">
+                View Executions
+            </button>
             <button type="button" ng-really-message="Are you sure?" ng-really-click="deleteTask({{task}})"
-                    class="btn btn-danger pull-right">
+                    class="btn btn-danger">
                 Delete
             </button>
         </td>

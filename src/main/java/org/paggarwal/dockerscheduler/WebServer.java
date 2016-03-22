@@ -54,6 +54,7 @@ public class WebServer {
         get("/v1/scheduledtasks",taskHandler.listScheduledTasks());
         post("/v1/tasks",taskHandler.create());
         delete("/v1/tasks/:id",taskHandler.delete());
+        post("/v1/tasks/:name/_execute",taskHandler.executeTask());
 
         // Task executions
         get("/v1/tasks/:id/executions", executionHandler.listExecutionsForATask());

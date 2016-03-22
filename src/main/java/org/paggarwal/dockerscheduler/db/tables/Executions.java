@@ -35,7 +35,7 @@ import org.paggarwal.dockerscheduler.db.tables.records.ExecutionsRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Executions extends TableImpl<ExecutionsRecord> {
 
-	private static final long serialVersionUID = 1712804910;
+	private static final long serialVersionUID = -797602716;
 
 	/**
 	 * The reference instance of <code>dockerscheduler.EXECUTIONS</code>
@@ -89,6 +89,11 @@ public class Executions extends TableImpl<ExecutionsRecord> {
 	 * The column <code>dockerscheduler.EXECUTIONS.ended_on</code>.
 	 */
 	public final TableField<ExecutionsRecord, Timestamp> ENDED_ON = createField("ended_on", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
+	/**
+	 * The column <code>dockerscheduler.EXECUTIONS.payload</code>.
+	 */
+	public final TableField<ExecutionsRecord, byte[]> PAYLOAD = createField("payload", org.jooq.impl.SQLDataType.BLOB, this, "");
 
 	/**
 	 * Create a <code>dockerscheduler.EXECUTIONS</code> table reference

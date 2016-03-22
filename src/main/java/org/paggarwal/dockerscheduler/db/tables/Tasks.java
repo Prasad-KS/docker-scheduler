@@ -34,7 +34,7 @@ import org.paggarwal.dockerscheduler.db.tables.records.TasksRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tasks extends TableImpl<TasksRecord> {
 
-	private static final long serialVersionUID = 1135787491;
+	private static final long serialVersionUID = -1329116024;
 
 	/**
 	 * The reference instance of <code>dockerscheduler.TASKS</code>
@@ -57,7 +57,7 @@ public class Tasks extends TableImpl<TasksRecord> {
 	/**
 	 * The column <code>dockerscheduler.TASKS.name</code>.
 	 */
-	public final TableField<TasksRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(1024).nullable(false), this, "");
+	public final TableField<TasksRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(128), this, "");
 
 	/**
 	 * The column <code>dockerscheduler.TASKS.created_on</code>.
@@ -137,7 +137,7 @@ public class Tasks extends TableImpl<TasksRecord> {
 	 */
 	@Override
 	public List<UniqueKey<TasksRecord>> getKeys() {
-		return Arrays.<UniqueKey<TasksRecord>>asList(Keys.KEY_TASKS_PRIMARY);
+		return Arrays.<UniqueKey<TasksRecord>>asList(Keys.KEY_TASKS_PRIMARY, Keys.KEY_TASKS_UK_TASKS_NAME);
 	}
 
 	/**

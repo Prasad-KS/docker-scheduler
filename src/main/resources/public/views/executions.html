@@ -75,6 +75,12 @@
     <tr ng-if="execution.expanded" ng-repeat-end="">
         <td colspan="5">
             <div>
+                <h4>Payload</h4>
+                <p class="well">
+                    {{execution.payload}}
+                </p>
+            </div>
+            <div>
                 <h4>Environment Variables</h4>
                 <p class="well">
                     {{execution.environmentVariables}}
