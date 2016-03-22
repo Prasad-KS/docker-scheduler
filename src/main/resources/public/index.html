@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/css/bootstrap.css">
     <link rel="stylesheet" href="/css/xeditable.css">
     <link rel="stylesheet" href="/css/angular-quartz-cron.css">
+    <link rel="stylesheet" href="/css/ionicons.css">
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
@@ -24,8 +25,9 @@
                 <li ng-class="{ active: isActive('/tasks')}"><a ui-sref="tasks">Tasks</a></li>
                 <li ng-class="{ active: isActive('/scheduledtasks')}"><a ui-sref="scheduledtasks">Scheduled Tasks</a></li>
                 <li ng-class="{ active: isActive('/environmentvariables')}"><a ui-sref="environmentvariables">Environment Variables</a></li>
+                <li ng-if="isAuthEnabled()" ng-class="{ active: isActive('/settings')}"><a ui-sref="settings">Settings</a></li>
             </ul>
-            <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
+            <ul ng-if="isAuthEnabled() && isAuthenticated()" class="nav navbar-nav pull-right">
                 <li><a ui-sref="logout">Logout</a></li>
             </ul>
         </div>

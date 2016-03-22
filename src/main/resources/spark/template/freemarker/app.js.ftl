@@ -78,10 +78,18 @@ app.config(['$stateProvider', '$urlRouterProvider','$locationProvider','$authPro
         resolve: {
             loginRequired: loginRequired
         }
+    }).state('settings',{
+        url: '/settings',
+        templateUrl: '/views/settings.html',
+        controller: 'SettingsController',
+        resolve: {
+            loginRequired: loginRequired
+        }
     });
 
+    <#if githubClientId?? && githubClientSecret??>
     $authProvider.github({
-        clientId: 'e526d58f157cb7cf5d4a',
+        clientId: '${githubClientId}',
         scope: ['user:email','read:org']
     });
 
@@ -97,7 +105,6 @@ app.config(['$stateProvider', '$urlRouterProvider','$locationProvider','$authPro
 
     function loginRequired($q, $location, $auth) {
         var deferred = $q.defer();
-        deferred.resolve();
         if ($auth.isAuthenticated()) {
             deferred.resolve();
         } else {
@@ -105,6 +112,19 @@ app.config(['$stateProvider', '$urlRouterProvider','$locationProvider','$authPro
         }
         return deferred.promise;
     }
+    <#else>
+    function skipIfLoggedIn($q, $auth) {
+        var deferred = $q.defer();
+        $location.path('/');
+        return deferred.promise;
+    }
+
+    function loginRequired($q, $location, $auth) {
+        var deferred = $q.defer();
+        deferred.resolve();
+        return deferred.promise;
+    }
+    </#if>
 }]);
 
 app.directive('ngReallyClick', [function() {
@@ -253,7 +273,20 @@ app.controller('EnvironmentVariableController', function ($scope, $http, $q, $fi
              }
          }
          return $q.all(results);
-     }
+    }
+
+    function generateUUID(){
+        var d = new Date().getTime();
+        if(window.performance && typeof window.performance.now === "function"){
+            d += performance.now(); //use high-precision timer if available
+        }
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (d + Math.random()*16)%16 | 0;
+            d = Math.floor(d/16);
+            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    }
 });
 
 app.controller('ExecutionController', function ($scope, $http, $location, $stateParams) {
@@ -286,7 +319,19 @@ app.controller('HeaderController', function ($scope, $http, $location, $auth) {
     };
 
     $scope.isAuthenticated = function() {
+        <#if githubClientId?? && githubClientSecret??>
         return $auth.isAuthenticated();
+        <#else>
+        return true;
+        </#if>
+    };
+
+    $scope.isAuthEnabled = function() {
+        <#if githubClientId?? && githubClientSecret??>
+        return true;
+        <#else>
+        return false;
+        </#if>
     };
 });
 
@@ -352,19 +397,23 @@ app.controller('ExecuteTaskController', function ($scope, $http, $location, $sta
     $http.get('/v1/tasks/' + taskId).success(function (data) {
         $scope.task = data;
     }).error(function (data, status) {
-        console.log('Error ' + data)
+        console.log('Error ' + data);
     });
 });
 
-function generateUUID(){
-    var d = new Date().getTime();
-    if(window.performance && typeof window.performance.now === "function"){
-        d += performance.now(); //use high-precision timer if available
-    }
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = (d + Math.random()*16)%16 | 0;
-        d = Math.floor(d/16);
-        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-    });
-    return uuid;
-}
+app.controller('SettingsController', function ($scope, $http, $location, $state) {
+   $scope.data = {};
+   $http.get('/v1/settings').success(function (data) {
+      $scope.data = data;
+   }).error(function (data,status){
+      console.log('Error ' + data);
+   });
+
+   $scope.generateKey = function() {
+      $http.post('/v1/settings/apiKey').success(function (data) {
+          $state.reload();
+      }).error(function (data,status){
+          console.log('Error ' + data);
+      });
+   };
+});

@@ -23,6 +23,7 @@ import org.paggarwal.dockerscheduler.db.tables.QrtzSchedulerState;
 import org.paggarwal.dockerscheduler.db.tables.QrtzSimpleTriggers;
 import org.paggarwal.dockerscheduler.db.tables.QrtzSimpropTriggers;
 import org.paggarwal.dockerscheduler.db.tables.QrtzTriggers;
+import org.paggarwal.dockerscheduler.db.tables.Settings;
 import org.paggarwal.dockerscheduler.db.tables.Tasks;
 import org.paggarwal.dockerscheduler.db.tables.Users;
 import org.paggarwal.dockerscheduler.db.tables.records.EnvironmentVariablesRecord;
@@ -38,6 +39,7 @@ import org.paggarwal.dockerscheduler.db.tables.records.QrtzSchedulerStateRecord;
 import org.paggarwal.dockerscheduler.db.tables.records.QrtzSimpleTriggersRecord;
 import org.paggarwal.dockerscheduler.db.tables.records.QrtzSimpropTriggersRecord;
 import org.paggarwal.dockerscheduler.db.tables.records.QrtzTriggersRecord;
+import org.paggarwal.dockerscheduler.db.tables.records.SettingsRecord;
 import org.paggarwal.dockerscheduler.db.tables.records.TasksRecord;
 import org.paggarwal.dockerscheduler.db.tables.records.UsersRecord;
 
@@ -62,6 +64,7 @@ public class Keys {
 
 	public static final Identity<EnvironmentVariablesRecord, Integer> IDENTITY_ENVIRONMENT_VARIABLES = Identities0.IDENTITY_ENVIRONMENT_VARIABLES;
 	public static final Identity<ExecutionsRecord, Integer> IDENTITY_EXECUTIONS = Identities0.IDENTITY_EXECUTIONS;
+	public static final Identity<SettingsRecord, Integer> IDENTITY_SETTINGS = Identities0.IDENTITY_SETTINGS;
 	public static final Identity<TasksRecord, Integer> IDENTITY_TASKS = Identities0.IDENTITY_TASKS;
 	public static final Identity<UsersRecord, Integer> IDENTITY_USERS = Identities0.IDENTITY_USERS;
 
@@ -83,6 +86,8 @@ public class Keys {
 	public static final UniqueKey<QrtzSimpleTriggersRecord> KEY_QRTZ_SIMPLE_TRIGGERS_PRIMARY = UniqueKeys0.KEY_QRTZ_SIMPLE_TRIGGERS_PRIMARY;
 	public static final UniqueKey<QrtzSimpropTriggersRecord> KEY_QRTZ_SIMPROP_TRIGGERS_PRIMARY = UniqueKeys0.KEY_QRTZ_SIMPROP_TRIGGERS_PRIMARY;
 	public static final UniqueKey<QrtzTriggersRecord> KEY_QRTZ_TRIGGERS_PRIMARY = UniqueKeys0.KEY_QRTZ_TRIGGERS_PRIMARY;
+	public static final UniqueKey<SettingsRecord> KEY_SETTINGS_PRIMARY = UniqueKeys0.KEY_SETTINGS_PRIMARY;
+	public static final UniqueKey<SettingsRecord> KEY_SETTINGS_UK_SETTINGS_NAME = UniqueKeys0.KEY_SETTINGS_UK_SETTINGS_NAME;
 	public static final UniqueKey<TasksRecord> KEY_TASKS_PRIMARY = UniqueKeys0.KEY_TASKS_PRIMARY;
 	public static final UniqueKey<TasksRecord> KEY_TASKS_UK_TASKS_NAME = UniqueKeys0.KEY_TASKS_UK_TASKS_NAME;
 	public static final UniqueKey<UsersRecord> KEY_USERS_PRIMARY = UniqueKeys0.KEY_USERS_PRIMARY;
@@ -104,6 +109,7 @@ public class Keys {
 	private static class Identities0 extends AbstractKeys {
 		public static Identity<EnvironmentVariablesRecord, Integer> IDENTITY_ENVIRONMENT_VARIABLES = createIdentity(EnvironmentVariables.ENVIRONMENT_VARIABLES, EnvironmentVariables.ENVIRONMENT_VARIABLES.ID);
 		public static Identity<ExecutionsRecord, Integer> IDENTITY_EXECUTIONS = createIdentity(Executions.EXECUTIONS, Executions.EXECUTIONS.ID);
+		public static Identity<SettingsRecord, Integer> IDENTITY_SETTINGS = createIdentity(Settings.SETTINGS, Settings.SETTINGS.ID);
 		public static Identity<TasksRecord, Integer> IDENTITY_TASKS = createIdentity(Tasks.TASKS, Tasks.TASKS.ID);
 		public static Identity<UsersRecord, Integer> IDENTITY_USERS = createIdentity(Users.USERS, Users.USERS.ID);
 	}
@@ -123,6 +129,8 @@ public class Keys {
 		public static final UniqueKey<QrtzSimpleTriggersRecord> KEY_QRTZ_SIMPLE_TRIGGERS_PRIMARY = createUniqueKey(QrtzSimpleTriggers.QRTZ_SIMPLE_TRIGGERS, QrtzSimpleTriggers.QRTZ_SIMPLE_TRIGGERS.SCHED_NAME);
 		public static final UniqueKey<QrtzSimpropTriggersRecord> KEY_QRTZ_SIMPROP_TRIGGERS_PRIMARY = createUniqueKey(QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS, QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS.SCHED_NAME, QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS.TRIGGER_NAME, QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS.TRIGGER_GROUP);
 		public static final UniqueKey<QrtzTriggersRecord> KEY_QRTZ_TRIGGERS_PRIMARY = createUniqueKey(QrtzTriggers.QRTZ_TRIGGERS, QrtzTriggers.QRTZ_TRIGGERS.SCHED_NAME, QrtzTriggers.QRTZ_TRIGGERS.TRIGGER_NAME, QrtzTriggers.QRTZ_TRIGGERS.TRIGGER_GROUP);
+		public static final UniqueKey<SettingsRecord> KEY_SETTINGS_PRIMARY = createUniqueKey(Settings.SETTINGS, Settings.SETTINGS.ID);
+		public static final UniqueKey<SettingsRecord> KEY_SETTINGS_UK_SETTINGS_NAME = createUniqueKey(Settings.SETTINGS, Settings.SETTINGS.NAME);
 		public static final UniqueKey<TasksRecord> KEY_TASKS_PRIMARY = createUniqueKey(Tasks.TASKS, Tasks.TASKS.ID);
 		public static final UniqueKey<TasksRecord> KEY_TASKS_UK_TASKS_NAME = createUniqueKey(Tasks.TASKS, Tasks.TASKS.NAME);
 		public static final UniqueKey<UsersRecord> KEY_USERS_PRIMARY = createUniqueKey(Users.USERS, Users.USERS.ID);

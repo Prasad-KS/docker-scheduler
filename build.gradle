@@ -41,6 +41,8 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
 
     compile 'com.sparkjava:spark-core:2.3'
+    compile 'com.sparkjava:spark-template-freemarker:2.3'
+
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.4'
     compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.11'
 

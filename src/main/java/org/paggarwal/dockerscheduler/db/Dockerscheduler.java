@@ -25,6 +25,7 @@ import org.paggarwal.dockerscheduler.db.tables.QrtzSchedulerState;
 import org.paggarwal.dockerscheduler.db.tables.QrtzSimpleTriggers;
 import org.paggarwal.dockerscheduler.db.tables.QrtzSimpropTriggers;
 import org.paggarwal.dockerscheduler.db.tables.QrtzTriggers;
+import org.paggarwal.dockerscheduler.db.tables.Settings;
 import org.paggarwal.dockerscheduler.db.tables.Tasks;
 import org.paggarwal.dockerscheduler.db.tables.Users;
 
@@ -42,7 +43,7 @@ import org.paggarwal.dockerscheduler.db.tables.Users;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dockerscheduler extends SchemaImpl {
 
-	private static final long serialVersionUID = 1696660744;
+	private static final long serialVersionUID = -499155984;
 
 	/**
 	 * The reference instance of <code>dockerscheduler</code>
@@ -78,6 +79,7 @@ public class Dockerscheduler extends SchemaImpl {
 			QrtzSimpleTriggers.QRTZ_SIMPLE_TRIGGERS,
 			QrtzSimpropTriggers.QRTZ_SIMPROP_TRIGGERS,
 			QrtzTriggers.QRTZ_TRIGGERS,
+			Settings.SETTINGS,
 			Tasks.TASKS,
 			Users.USERS);
 	}

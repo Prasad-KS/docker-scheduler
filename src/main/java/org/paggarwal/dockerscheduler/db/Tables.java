@@ -19,6 +19,7 @@ import org.paggarwal.dockerscheduler.db.tables.QrtzSchedulerState;
 import org.paggarwal.dockerscheduler.db.tables.QrtzSimpleTriggers;
 import org.paggarwal.dockerscheduler.db.tables.QrtzSimpropTriggers;
 import org.paggarwal.dockerscheduler.db.tables.QrtzTriggers;
+import org.paggarwal.dockerscheduler.db.tables.Settings;
 import org.paggarwal.dockerscheduler.db.tables.Tasks;
 import org.paggarwal.dockerscheduler.db.tables.Users;
 
@@ -100,6 +101,11 @@ public class Tables {
 	 * The table dockerscheduler.QRTZ_TRIGGERS
 	 */
 	public static final QrtzTriggers QRTZ_TRIGGERS = org.paggarwal.dockerscheduler.db.tables.QrtzTriggers.QRTZ_TRIGGERS;
+
+	/**
+	 * The table dockerscheduler.SETTINGS
+	 */
+	public static final Settings SETTINGS = org.paggarwal.dockerscheduler.db.tables.Settings.SETTINGS;
 
 	/**
 	 * The table dockerscheduler.TASKS

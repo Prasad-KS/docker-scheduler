@@ -466,8 +466,22 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="9" author="paggarwal">
+    <changeSet author="paggarwal" id="9">
         <modifyDataType tableName="TASKS" columnName="name" newDataType="VARCHAR(128)"/>
         <addUniqueConstraint tableName="TASKS" columnNames="name" constraintName="UK_TASKS_NAME" />
+    </changeSet>
+
+    <changeSet author="paggarwal" id="10">
+        <createTable tableName="SETTINGS">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UK_SETTINGS_NAME"/>
+            </column>
+            <column name="value" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -46,6 +46,9 @@ public class AuthHandler extends RequestHandlerWrapper<AuthRequest> implements T
     @Value("#{ systemEnvironment['GITHUB_ORGS'] ?: 'LiftOffLLC' }")
     private String githubOrgString;
 
+    @Value("#{ systemEnvironment['GITHUB_CLIENT_SECRET'] }")
+    private String githubSecret;
+
     @Inject
     private org.paggarwal.dockerscheduler.service.UserService userService;
 

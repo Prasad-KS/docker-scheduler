@@ -1,0 +1,17 @@
+<h2>Settings</h2>
+
+
+<button ng-click="generateKey()" ng-if="data['apiKey'] === undefined" class="btn btn-primary">Generate Key</button>
+<table class="table table-hover" ng-if="data['apiKey'] !== undefined">
+    <tr>
+        <th>
+            API Key
+        </th>
+        <td>
+            {{data.apiKey}}
+        </td>
+        <td>
+            <button ng-click="generateKey()" class="btn btn-primary">Regenerate Key</button>
+        </td>
+    </tr>
+</table>
