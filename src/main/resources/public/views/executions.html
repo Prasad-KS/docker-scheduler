@@ -76,27 +76,19 @@
         <td colspan="5">
             <div>
                 <h4>Payload</h4>
-                <p class="well">
-                    {{execution.payload}}
-                </p>
+                <pre class="well">{{execution.payload | trim}}</pre>
             </div>
             <div>
                 <h4>Environment Variables</h4>
-                <p class="well">
-                    {{execution.environmentVariables}}
-                </p>
+                <pre>{{execution.environmentVariables | flatten }}</pre>
             </div>
             <div>
                 <h4>STDOUT</h4>
-                <p class="well">
-                    {{execution.stdout}}
-                </p>
+                <pre class="well">{{execution.stdout | trim}}</pre>
             </div>
             <div>
                 <h4>STDERR</h4>
-                <p class="well">
-                    {{execution.stderr}}
-                </p>
+                <pre class="well">{{execution.stderr | trim}}</pre>
             </div>
         </td>
     </tr>

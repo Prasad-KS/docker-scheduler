@@ -53,7 +53,7 @@ public class SchedulerConfig {
         schedulerFactoryBean.setQuartzProperties(quartzProperties);
         schedulerFactoryBean.setOverwriteExistingJobs(false);
         schedulerFactoryBean.setJobFactory(new InjectionCapableJobFactory(applicationContext.getAutowireCapableBeanFactory()));
-        schedulerFactoryBean.setAutoStartup(true);
+        schedulerFactoryBean.setAutoStartup(!isMaster);
         return schedulerFactoryBean;
     }
 

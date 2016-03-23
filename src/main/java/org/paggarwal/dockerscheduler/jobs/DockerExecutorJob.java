@@ -4,14 +4,11 @@ import com.auth0.jwt.internal.com.fasterxml.jackson.core.type.TypeReference;
 import com.auth0.jwt.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import org.iq80.snappy.Snappy;
 import org.paggarwal.dockerscheduler.models.EnvironmentVariable;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.models.Task;
@@ -21,16 +18,17 @@ import org.paggarwal.dockerscheduler.service.TaskService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.ImmutableMap.of;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.paggarwal.dockerscheduler.models.Execution.Builder.anExecution;
 
 /**
@@ -41,6 +39,14 @@ public class DockerExecutorJob implements Job {
     public static final String PAYLOAD = "PAYLOAD";
     public static final String TASK_NAME_SEPARATOR = "_";
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+
+
+    @Value("#{ systemEnvironment['DOCKER_DNS'] }")
+    private String dns;
+
+    @Value("#{ systemEnvironment['DOCKER_DNS_SEARCH'] }")
+    private String dnsSearch;
 
     @Inject
     private DockerClient dockerClient;
@@ -88,12 +94,18 @@ public class DockerExecutorJob implements Job {
             String stdOut = "";
             String stdError = "";
             try {
+                System.out.println("STARTING");
                 if(runDockerImage(image, command, name, environmentVariables, logHandler) == 0) {
                     status = Execution.Status.SUCCEDED;
+                    System.out.println("SUCCESS");
+                } else {
+                    System.out.println("FAILED due to exception inside container");
                 }
                 stdError = logHandler.getStdErr();
+                System.out.println(stdError);
             } catch (Exception e) {
                 stdError = e.getMessage() + "\n" + Joiner.on("\n").join(e.getStackTrace());
+                System.out.println("FAILED due to exception");
             }
             stdOut = logHandler.getStdOut();
             executionService.update(builder
@@ -107,31 +119,32 @@ public class DockerExecutorJob implements Job {
 
 
     private Integer runDockerImage(String image, List<String> command, String name, List<EnvironmentVariable> environmentVariables, LogHandler logHandler) {
-        String containerId = null;
+
+        PullImageResultCallback callback = new PullImageResultCallback();
+        dockerClient.pullImageCmd(image).exec(callback);
+        callback.awaitSuccess();
 
         List<String> environmentVars = environmentVariables.stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList());
-
         CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVars);
+        createContainerCmd.withLabels(of("io.rancher.container.network","true"));
 
-        try {
-            containerId = createContainerCmd.exec().getId();
-        } catch (NotFoundException e) {
-            PullImageResultCallback callback = new PullImageResultCallback();
-            dockerClient.pullImageCmd(image).exec(callback);
-            callback.awaitSuccess();
-            containerId = createContainerCmd.exec().getId();
+        if(isNotBlank(dns)) {
+            createContainerCmd.withDns(Splitter.on(",").splitToList(dns));
         }
+        if(isNotBlank(dnsSearch)) {
+            createContainerCmd.withDnsSearch(Splitter.on(",").splitToList(dnsSearch));
+        }
+        String containerId = createContainerCmd.exec().getId();
+
         dockerClient.startContainerCmd(containerId).exec();
+        WaitContainerResultCallback waitContainerResultCallback = new WaitContainerResultCallback();
+        dockerClient.waitContainerCmd(containerId).exec(waitContainerResultCallback);
+        int exitCode = waitContainerResultCallback.awaitStatusCode();
         dockerClient.logContainerCmd(containerId)
                 .withStdOut(true)
                 .withStdErr(true)
-                .withFollowStream(true)
-                .withTailAll()
                 .withTimestamps(true).exec(logHandler);
-        WaitContainerResultCallback waitContainerResultCallback = new WaitContainerResultCallback();
-        dockerClient.waitContainerCmd(containerId).exec(waitContainerResultCallback);
-
         dockerClient.removeContainerCmd(containerId).withForce(true).exec();
-        return waitContainerResultCallback.awaitStatusCode();
+        return exitCode;
     }
 }

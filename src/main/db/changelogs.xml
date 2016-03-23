@@ -484,4 +484,7 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet author="paggarwal" id="11">
+        <modifyDataType tableName="EXECUTIONS" columnName="environment_variables" newDataType="VARCHAR(2048)"/>
+    </changeSet>
 </databaseChangeLog>

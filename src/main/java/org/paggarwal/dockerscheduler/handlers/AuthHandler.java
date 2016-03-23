@@ -75,7 +75,7 @@ public class AuthHandler extends RequestHandlerWrapper<AuthRequest> implements T
         requestParams.put("code", authRequest.getCode());
         requestParams.put("client_id", authRequest.getClientId());
         requestParams.put("redirect_uri", authRequest.getRedirectUri());
-        requestParams.put("client_secret","4687cab796cf071fabb6784fdf8eec733f6eb1ca");
+        requestParams.put("client_secret",githubSecret);
         Client client = ClientBuilder.newClient();
 
         try {

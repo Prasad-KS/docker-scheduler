@@ -1,6 +1,7 @@
 package org.paggarwal.dockerscheduler.service.impl;
 
 import org.jooq.DSLContext;
+import org.jooq.InsertValuesStep2;
 import org.jooq.Query;
 import org.paggarwal.dockerscheduler.models.EnvironmentVariable;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,9 @@ public class EnvironmentVariableServiceImpl implements org.paggarwal.dockersched
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean create(List<EnvironmentVariable> environmentVariables) {
-        return Arrays.stream(dsl.batch(
-                (Query) environmentVariables.stream().map(environmentVariable -> dsl.insertInto(ENVIRONMENT_VARIABLES).columns(ENVIRONMENT_VARIABLES.NAME
-                , ENVIRONMENT_VARIABLES.VALUE).values(environmentVariable.getName(), environmentVariable.getValue())).collect(Collectors.toList())
-        ).execute()).filter(value -> value <= 0).count() == 0 ;
+        List<InsertValuesStep2> environmentVariablesInserts = environmentVariables.stream().map(environmentVariable -> dsl.insertInto(ENVIRONMENT_VARIABLES).columns(ENVIRONMENT_VARIABLES.NAME
+                , ENVIRONMENT_VARIABLES.VALUE).values(environmentVariable.getName(), environmentVariable.getValue())).collect(Collectors.toList());
+        return Arrays.stream(dsl.batch(environmentVariablesInserts).execute()).filter(value -> value <= 0).count() == 0 ;
     }
 
     @Transactional(rollbackFor = Exception.class)

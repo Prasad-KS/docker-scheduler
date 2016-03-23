@@ -417,3 +417,23 @@ app.controller('SettingsController', function ($scope, $http, $location, $state)
       });
    };
 });
+
+app.filter('trim', function () {
+    return function(value) {
+        if(!angular.isString(value)) {
+            return value;
+        }
+        return value.trim(); // you could use .trim, but it's not going to work in IE<9
+    };
+});
+app.filter('flatten', function () {
+    return function(object) {
+        var value = "";
+        for (var property in object) {
+            if (object.hasOwnProperty(property)) {
+                value += property + "=" + object[property] + "\n";
+            }
+        }
+        return value.trim();
+    };
+});

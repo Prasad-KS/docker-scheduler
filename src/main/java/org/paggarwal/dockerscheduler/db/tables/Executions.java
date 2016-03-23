@@ -35,7 +35,7 @@ import org.paggarwal.dockerscheduler.db.tables.records.ExecutionsRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Executions extends TableImpl<ExecutionsRecord> {
 
-	private static final long serialVersionUID = -797602716;
+	private static final long serialVersionUID = -202947388;
 
 	/**
 	 * The reference instance of <code>dockerscheduler.EXECUTIONS</code>
@@ -73,7 +73,7 @@ public class Executions extends TableImpl<ExecutionsRecord> {
 	/**
 	 * The column <code>dockerscheduler.EXECUTIONS.environment_variables</code>.
 	 */
-	public final TableField<ExecutionsRecord, String> ENVIRONMENT_VARIABLES = createField("environment_variables", org.jooq.impl.SQLDataType.VARCHAR.length(1024).nullable(false), this, "");
+	public final TableField<ExecutionsRecord, String> ENVIRONMENT_VARIABLES = createField("environment_variables", org.jooq.impl.SQLDataType.VARCHAR.length(2048), this, "");
 
 	/**
 	 * The column <code>dockerscheduler.EXECUTIONS.status</code>.

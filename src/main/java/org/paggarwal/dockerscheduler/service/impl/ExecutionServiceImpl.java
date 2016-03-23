@@ -3,6 +3,7 @@ package org.paggarwal.dockerscheduler.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import org.iq80.snappy.Snappy;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -121,7 +123,9 @@ public class ExecutionServiceImpl implements ExecutionService {
                             .withType(Task.Type.values()[record.getValue(TASKS.TYPE)])
                             .build());
             if(!StringUtils.isBlank(record.getValue(EXECUTIONS.ENVIRONMENT_VARIABLES))) {
-                builder.withEnvironmentVariables(OBJECT_MAPPER.readValue(record.getValue(EXECUTIONS.ENVIRONMENT_VARIABLES), Map.class));
+                Map<String,String> environmentVariables = Maps.newHashMap();
+                Arrays.stream(record.getValue(EXECUTIONS.ENVIRONMENT_VARIABLES).split("\n")).forEach(s -> environmentVariables.put(s.split("=")[0],s.split("=")[1]));
+                builder.withEnvironmentVariables(environmentVariables);
             }
 
             return builder.build();
