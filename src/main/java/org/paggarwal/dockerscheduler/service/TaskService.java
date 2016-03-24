@@ -19,5 +19,5 @@ public interface TaskService {
 
     boolean delete(int id);
 
-    boolean execute(String taskName, List<String> payload);
+    boolean execute(String taskName, String payload);
 }

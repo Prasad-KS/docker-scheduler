@@ -368,31 +368,14 @@ app.controller('LogoutCtrl', function($location, $auth) {
 app.controller('ExecuteTaskController', function ($scope, $http, $location, $stateParams, $state, $filter) {
     var taskName = $stateParams.taskName;
     var taskId = $stateParams.taskId;
-    var id = 0;
-
-    $scope.payloads = [];
 
     $scope.executeTask = function() {
-      var data = [];
-      $scope.payloads.forEach(function(e){
-        data.push(e['value']);
-      });
-      $http.post('/v1/tasks/' + taskName + '/_execute', { payload: data }).success(function (data) {
+      $http.post('/v1/tasks/' + taskName + '/_execute', { payload: $scope.payload }).success(function (data) {
           $state.go('executions',{'taskId': taskId});
       }).error(function (data, status) {
           console.log('Error ' + data);
       });
     }
-
-    $scope.addNewPayload = function() {
-        $scope.payloads.push({ id: id + 1 });
-        id += 1;
-    }
-
-    $scope.removePayload = function(id) {
-        var objToDelete = $filter('filter')($scope.payloads, function (d) {return d.id === id;});
-        $scope.payloads.splice($scope.payloads.indexOf(objToDelete),1);
-    };
 
     $http.get('/v1/tasks/' + taskId).success(function (data) {
         $scope.task = data;

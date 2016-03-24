@@ -9,6 +9,8 @@ import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import org.kamranzafar.jtar.TarEntry;
+import org.kamranzafar.jtar.TarOutputStream;
 import org.paggarwal.dockerscheduler.models.EnvironmentVariable;
 import org.paggarwal.dockerscheduler.models.Execution;
 import org.paggarwal.dockerscheduler.models.Task;
@@ -21,7 +23,12 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -81,21 +88,15 @@ public class DockerExecutorJob implements Job {
             builder.withId(executionService.create(builder.build()));
 
             String image = taskOpt.get().getImage();
-            List<String> command = Lists.newArrayList(taskOpt.get().getCommand());
-            if(payloadOpt.isPresent()) {
-                try {
-                    command.addAll(OBJECT_MAPPER.readValue(payloadOpt.get(), new TypeReference<List<String>>() {}));
-                } catch (IOException e) {
-                    throw new JobExecutionException(e);
-                }
-            }
+            String command = taskOpt.get().getCommand();
+            String payload = payloadOpt.orElse(null);
             String name = taskOpt.get().getName() + TASK_NAME_SEPARATOR + context.getFireInstanceId();
             Execution.Status status = Execution.Status.FAILED;
             String stdOut = "";
             String stdError = "";
             try {
                 System.out.println("STARTING");
-                if(runDockerImage(image, command, name, environmentVariables, logHandler) == 0) {
+                if(runDockerImage(image, command, name, environmentVariables, payload, logHandler) == 0) {
                     status = Execution.Status.SUCCEDED;
                     System.out.println("SUCCESS");
                 } else {
@@ -118,25 +119,59 @@ public class DockerExecutorJob implements Job {
     }
 
 
-    private Integer runDockerImage(String image, List<String> command, String name, List<EnvironmentVariable> environmentVariables, LogHandler logHandler) {
+    private Integer runDockerImage(String image, String command, String name, List<EnvironmentVariable> environmentVariables, String payload, LogHandler logHandler) throws JobExecutionException {
 
         PullImageResultCallback callback = new PullImageResultCallback();
         dockerClient.pullImageCmd(image).exec(callback);
         callback.awaitSuccess();
 
         List<String> environmentVars = environmentVariables.stream().map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue()).collect(Collectors.toList());
-        CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(image).withCmd(command).withName(name).withEnv(environmentVars);
-        createContainerCmd.withLabels(of("io.rancher.container.network","true"));
+        CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(image)
+                .withCmd(command)
+                .withName(name)
+                .withEnv(environmentVars)
+                .withLabels(of("io.rancher.container.network","true"));
 
         if(isNotBlank(dns)) {
             createContainerCmd.withDns(Splitter.on(",").splitToList(dns));
         }
+
         if(isNotBlank(dnsSearch)) {
             createContainerCmd.withDnsSearch(Splitter.on(",").splitToList(dnsSearch));
         }
+
+        if(payload != null) {
+            createContainerCmd.withCmd(command,"-payload","/tmp/" + name + ".json");
+        }
+
         String containerId = createContainerCmd.exec().getId();
 
+        if(payload != null) {
+            try {
+                Files.write(Paths.get(name + ".json"),payload.getBytes());
+            } catch (IOException e) {
+                throw new JobExecutionException(e);
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            TarOutputStream tos = new TarOutputStream(baos);
+
+            try {
+                File f = new File(name + ".json");
+                tos.putNextEntry(new TarEntry(f, f.getName()));
+                tos.write(payload.getBytes(),0,payload.getBytes().length);
+                tos.flush();
+                tos.close();
+                f.delete();
+            } catch (IOException e) {
+                throw new JobExecutionException(e);
+            }
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            dockerClient.copyArchiveToContainerCmd(containerId).withRemotePath("/tmp").withTarInputStream(bais).exec();
+        }
+
         dockerClient.startContainerCmd(containerId).exec();
+
         WaitContainerResultCallback waitContainerResultCallback = new WaitContainerResultCallback();
         dockerClient.waitContainerCmd(containerId).exec(waitContainerResultCallback);
         int exitCode = waitContainerResultCallback.awaitStatusCode();

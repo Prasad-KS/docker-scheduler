@@ -17,14 +17,14 @@ import java.util.List;
 public class TaskExecutionPayload implements Validable {
     public static final TypeReference<TaskExecutionPayload> TYPE = new TypeReference<TaskExecutionPayload>() {};
 
-    private List<String> payload;
+    private String payload;
 
     @JsonCreator
-    public TaskExecutionPayload(@JsonProperty("payload") List<String> payload) {
+    public TaskExecutionPayload(@JsonProperty("payload") String payload) {
         this.payload = payload;
     }
 
-    public List<String> getPayload() {
+    public String getPayload() {
         return payload;
     }
 

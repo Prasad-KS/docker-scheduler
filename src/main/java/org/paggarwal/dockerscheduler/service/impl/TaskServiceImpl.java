@@ -106,7 +106,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public boolean execute(String taskName, List<String> payload) {
+    public boolean execute(String taskName, String payload) {
         try {
             boolean toReturn = false;
             Optional<Record2<Integer, Integer>> tasksRecordOptional = Optional.ofNullable(dsl.select(TASKS.ID, TASKS.TYPE).from(TASKS).where(TASKS.NAME.equal(taskName)).fetchOne());
@@ -117,7 +117,7 @@ public class TaskServiceImpl implements TaskService {
                 TaskGroup taskGroup = taskType == Type.SCHEDULED_TASK ? TaskGroup.SCHEDULED_TASK : TaskGroup.TASK;
 
                 JobDataMap jobData = new JobDataMap();
-                jobData.put(DockerExecutorJob.PAYLOAD, OBJECT_MAPPER.writeValueAsString(payload));
+                jobData.put(DockerExecutorJob.PAYLOAD, payload);
                 scheduler.triggerJob(JobKey.jobKey(Integer.toString(id), taskGroup.toString()), jobData);
                 toReturn = true;
             }
