@@ -172,15 +172,13 @@ app.controller('TaskController', function ($scope, $window, $http, $location, $s
 
 
 
-
-
     $scope.createTask = function () {
         $http.post('/v1/tasks', $scope.task).success(function (data) {
             $previousState.go();
         }).error(function (data, status) {
             console.log('Error ' + data)
         })
-    }
+    };
 
     $scope.deleteTask = function (task) {
         $http.delete('/v1/tasks/' + task.id).success(function (data) {
@@ -188,7 +186,15 @@ app.controller('TaskController', function ($scope, $window, $http, $location, $s
         }).error(function (data, status) {
             console.log('Error ' + data)
         })
-    }
+    };
+
+    $scope.executeScheduledTask = function(task) {
+        $http.post('/v1/tasks/' + task.name + '/_execute', { payload: '' }).success(function (data) {
+            $state.go('executions',{'taskId': task.id});
+        }).error(function (data, status) {
+            console.log('Error ' + data);
+        });
+    };
 });
 
 
@@ -203,7 +209,7 @@ app.controller('EnvironmentVariableController', function ($scope, $http, $q, $fi
 
     $scope.filterEnvironmentVariable = function (environmentvariable) {
         return environmentvariable.isDeleted !== true;
-    }
+    };
 
     $scope.deleteEnvironmentVariable = function(id) {
         var filtered = $filter('filter')($scope.environmentvariables, {id: id});
@@ -273,7 +279,7 @@ app.controller('EnvironmentVariableController', function ($scope, $http, $q, $fi
              }
          }
          return $q.all(results);
-    }
+    };
 
     function generateUUID(){
         var d = new Date().getTime();
@@ -286,7 +292,7 @@ app.controller('EnvironmentVariableController', function ($scope, $http, $q, $fi
             return (c=='x' ? r : (r&0x3|0x8)).toString(16);
         });
         return uuid;
-    }
+    };
 });
 
 app.controller('ExecutionController', function ($scope, $http, $location, $stateParams) {

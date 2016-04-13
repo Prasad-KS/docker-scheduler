@@ -140,13 +140,13 @@ public class DockerExecutorJob implements Job {
             createContainerCmd.withDnsSearch(Splitter.on(",").splitToList(dnsSearch));
         }
 
-        if(payload != null) {
+        if(isNotBlank(payload)) {
             createContainerCmd.withCmd(command,"-payload","/tmp/" + name + ".json");
         }
 
         String containerId = createContainerCmd.exec().getId();
 
-        if(payload != null) {
+        if(isNotBlank(payload)) {
             try {
                 Files.write(Paths.get(name + ".json"),payload.getBytes());
             } catch (IOException e) {
