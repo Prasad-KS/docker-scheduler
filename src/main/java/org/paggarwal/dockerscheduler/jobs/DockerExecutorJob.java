@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.of;
@@ -69,7 +70,12 @@ public class DockerExecutorJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        LogHandler logHandler = new LogHandler();
+        LogHandler logHandler = new LogHandler() {
+            @Override
+            public void onComplete() {
+                super.onComplete();
+            }
+        };
         int taskId = context.getMergedJobDataMap().getIntFromString(TASK_ID);
         Optional<String> payloadOpt = Optional.ofNullable(context.getMergedJobDataMap().getString(PAYLOAD));
         Optional<Task> taskOpt = taskService.get(taskId);
@@ -178,7 +184,14 @@ public class DockerExecutorJob implements Job {
         dockerClient.logContainerCmd(containerId)
                 .withStdOut(true)
                 .withStdErr(true)
-                .withTimestamps(true).exec(logHandler);
+                .withTimestamps(true)
+                .withTailAll()
+                .exec(logHandler);
+        try {
+            logHandler.awaitCompletion();
+        } catch (InterruptedException e) {
+            //e.printStackTrace();
+        }
         dockerClient.removeContainerCmd(containerId).withForce(true).exec();
         return exitCode;
     }
