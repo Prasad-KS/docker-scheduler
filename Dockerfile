@@ -4,6 +4,8 @@ MAINTAINER paggarwal
 RUN mkdir /build
 
 COPY ./build/libs/docker-scheduler-1.0-SNAPSHOT-all.jar build/
+COPY ./newrelic-agent.jar build/
+COPY ./newrelic.yml build/
 
 WORKDIR /build
 
