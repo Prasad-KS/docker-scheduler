@@ -148,3 +148,5 @@ task fatJar(type: Jar) {
     }
     with jar
 }
+
+generateDbJooqSchemaSource.enabled = false
