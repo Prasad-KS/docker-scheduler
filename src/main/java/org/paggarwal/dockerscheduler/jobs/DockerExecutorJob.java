@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.auth0.jwt.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.model.AuthConfig;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import com.google.common.base.Joiner;
@@ -56,6 +57,9 @@ public class DockerExecutorJob implements Job {
 
 	@Inject
 	private DockerClient dockerClient;
+	
+	@Inject
+	private AuthConfig authConfig;
 
 	@Inject
 	private EnvironmentVariableService environmentVariableService;
@@ -121,7 +125,7 @@ public class DockerExecutorJob implements Job {
 			throws JobExecutionException, InterruptedException {
 
 		PullImageResultCallback callback = new PullImageResultCallback();
-		dockerClient.pullImageCmd(image).exec(callback).awaitCompletion();
+		dockerClient.pullImageCmd(image).withAuthConfig(authConfig).exec(callback).awaitCompletion();
 
 		List<String> environmentVars = environmentVariables.stream()
 				.map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue())
