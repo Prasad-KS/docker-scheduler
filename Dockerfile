@@ -1,6 +1,8 @@
 FROM thrively/jdk8-maven
 MAINTAINER paggarwal
 
+RUN apk add --no-cache libstdc++
+
 RUN mkdir /build
 
 COPY ./build/libs/docker-scheduler-1.0-SNAPSHOT-all.jar build/
