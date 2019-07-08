@@ -1,13 +1,14 @@
 package org.paggarwal.dockerscheduler.config;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.google.common.io.Files;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DefaultDockerClientConfig.Builder;
+import com.github.dockerjava.core.DockerClientBuilder;
 
 /**
  * Created by paggarwal on 3/10/16.
@@ -32,7 +33,7 @@ public class DockerConfig {
 
     @Bean
     public DockerClient dockerClient() {
-        DockerClientConfig.DockerClientConfigBuilder configBuilder = DockerClientConfig.createDefaultConfigBuilder()
+    	Builder configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(dockerHost).withDockerTlsVerify(false);
         if(StringUtils.isNotBlank(registryUrl)) {
             configBuilder.withRegistryUrl(registryUrl)

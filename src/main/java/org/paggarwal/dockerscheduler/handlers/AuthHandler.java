@@ -1,41 +1,33 @@
 package org.paggarwal.dockerscheduler.handlers;
 
-import com.auth0.jwt.JWTSigner;
-import com.auth0.jwt.JWTVerifier;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.eclipse.egit.github.core.User;
-import org.eclipse.egit.github.core.client.GitHubClient;
-import org.eclipse.egit.github.core.service.OrganizationService;
-import org.eclipse.egit.github.core.service.UserService;
-import org.glassfish.jersey.filter.LoggingFilter;
-import org.paggarwal.dockerscheduler.Answer;
-import org.paggarwal.dockerscheduler.RequestHandlerWrapper;
-import org.paggarwal.dockerscheduler.models.AuthRequest;
-import org.paggarwal.dockerscheduler.util.TriFunction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import static com.google.common.collect.ImmutableMap.of;
+import static org.paggarwal.dockerscheduler.models.User.Builder.anUser;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Logger;
 
-import static com.google.common.collect.ImmutableMap.of;
-import static org.paggarwal.dockerscheduler.models.User.Builder.anUser;
+import org.eclipse.egit.github.core.User;
+import org.eclipse.egit.github.core.service.OrganizationService;
+import org.eclipse.egit.github.core.service.UserService;
+import org.paggarwal.dockerscheduler.Answer;
+import org.paggarwal.dockerscheduler.RequestHandlerWrapper;
+import org.paggarwal.dockerscheduler.models.AuthRequest;
+import org.paggarwal.dockerscheduler.util.TriFunction;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.auth0.jwt.JWTSigner;
+import com.auth0.jwt.JWTVerifier;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 
 /**
  * Created by paggarwal on 3/21/16.

@@ -58,3 +58,8 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 src/main/generated
+/bin/
+.settings
+.classpath
+.project
+.DS_Store
