@@ -45,7 +45,7 @@ public class DockerConfig {
 	}
 
 	@Bean
-	public AuthConfig authConfig() {
+	public AuthConfig registryAuthConfig() {
 		return new AuthConfig().withUsername(registryUsername).withPassword(registryPassword)
 				.withRegistryAddress(registryUrl).withEmail(registryEmail);
 	}

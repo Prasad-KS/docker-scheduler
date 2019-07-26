@@ -59,7 +59,7 @@ public class DockerExecutorJob implements Job {
 	private DockerClient dockerClient;
 	
 	@Inject
-	private AuthConfig authConfig;
+	private AuthConfig registryAuthConfig;
 
 	@Inject
 	private EnvironmentVariableService environmentVariableService;
@@ -125,7 +125,7 @@ public class DockerExecutorJob implements Job {
 			throws JobExecutionException, InterruptedException {
 
 		PullImageResultCallback callback = new PullImageResultCallback();
-		dockerClient.pullImageCmd(image).withAuthConfig(authConfig).exec(callback).awaitCompletion();
+		dockerClient.pullImageCmd(image).withAuthConfig(registryAuthConfig).exec(callback).awaitCompletion();
 
 		List<String> environmentVars = environmentVariables.stream()
 				.map(environmentVariable -> environmentVariable.getName() + "=" + environmentVariable.getValue())
