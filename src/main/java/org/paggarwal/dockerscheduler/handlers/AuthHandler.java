@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.UserService;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.paggarwal.dockerscheduler.Answer;
 import org.paggarwal.dockerscheduler.RequestHandlerWrapper;
 import org.paggarwal.dockerscheduler.models.AuthRequest;
@@ -68,7 +69,7 @@ public class AuthHandler extends RequestHandlerWrapper<AuthRequest> implements T
         requestParams.put("client_id", authRequest.getClientId());
         requestParams.put("redirect_uri", authRequest.getRedirectUri());
         requestParams.put("client_secret",githubSecret);
-        Client client = ClientBuilder.newClient();
+        Client client = ClientBuilder.newClient().register(JacksonFeature.class);
 
         try {
             Entity<Map<String,String>> entity = Entity.json(requestParams);
