@@ -7,6 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
+    	classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
         classpath "org.liquibase:liquibase-gradle-plugin:1.2.1"
         classpath 'nu.studer:gradle-jooq-plugin:1.0.6'
         classpath 'mysql:mysql-connector-java:5.1.38'
@@ -24,9 +25,16 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'groovy'
+apply plugin: "io.spring.dependency-management"
 apply plugin: 'org.liquibase.gradle'
 apply plugin: 'nu.studer.jooq'
 apply plugin: 'application'
+
+dependencyManagement {
+  imports {
+      mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+  }
+}
 
 mainClassName = "org.paggarwal.dockerscheduler.Main"
 
@@ -67,6 +75,7 @@ dependencies {
     compile 'org.quartz-scheduler:quartz-jobs:2.2.2'
 
     compile 'com.github.docker-java:docker-java:3.1.1'
+    compile 'com.amazonaws:aws-java-sdk-ecr'
 
     compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
 
